@@ -1,0 +1,9 @@
+
+footer {
+    background-color: var(--color-background);
+    border-top: 0.1rem var(--color-border) solid;
+    padding: 1rem;
+    color: var(--color-secondary-text);
+    text-align: center;
+    flex-shrink: 0;
+}

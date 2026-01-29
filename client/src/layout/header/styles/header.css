@@ -1,0 +1,112 @@
+header {
+    background-color: var(--color-background);
+    position: sticky;
+    z-index: 10;
+    top: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    outline: 0.1rem var(--color-border) solid;
+}
+
+.primary-navigation {
+    width: 100%;
+    position: relative;
+}
+
+.nav-menu {
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    width: 100%;
+    transition:
+        max-height 0.8s ease,
+        opacity 0.8s ease;
+    background: linear-gradient(var(--color-background));
+}
+.nav-menu.active {
+    opacity: 1;
+    max-height: 15rem;
+}
+.nav-menu > li {
+    padding-block: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.nav-menu.active > li {
+    border-top: 0.1rem solid var(--color-border);
+}
+
+.logo {
+    width: 64px;
+    padding-inline-start: 0.5rem;
+}
+
+.bar {
+    --my-bar-size: 2rem;
+    display: block;
+    inline-size: var(--my-bar-size);
+    height: 0.3rem;
+    margin: 0.7rem auto;
+    border-radius: 20px;
+    transition: all 0.3s ease-in-out;
+    background-color: var(--color-primary-text);
+}
+
+.hamburger {
+    padding: 0rem 1rem;
+    display: block;
+    cursor: pointer;
+    margin: 0;
+}
+.hamburger.active .bar:nth-child(1) {
+    transform: translateY(calc(var(--my-bar-size) / 2)) rotate(45deg);
+}
+.hamburger.active .bar:nth-child(2) {
+    opacity: 0;
+}
+.hamburger.active .bar:nth-child(3) {
+    transform: translateY(calc(var(--my-bar-size) / (-2))) rotate(-45deg);
+}
+
+@media screen and (width > 720px) {
+    .hamburger {
+        display: none;
+    }
+    .header {
+        flex-wrap: nowrap;
+    }
+
+    .nav-menu {
+        position: static;
+        top: auto;
+        flex-direction: row;
+        display: flex;
+        background: none;
+        width: auto;
+        padding-inline: 1rem;
+        max-height: none;
+        opacity: 1;
+        gap: 1rem;
+    }
+    .nav-menu.active {
+        outline: none;
+    }
+    .nav-menu.active > li {
+        outline: none;
+        border-top: none;
+    }
+    .nav-menu > li:nth-of-type(1) {
+        margin-left: 10rem;
+    }
+    .nav-menu > li:nth-of-type(5) {
+        margin-left: 2rem;
+    }
+
+    .primary-navigation {
+        position: static;
+        width: auto;
+    }
+}

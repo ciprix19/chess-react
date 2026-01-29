@@ -1,0 +1,13 @@
+.sign-up-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.sign-up-form > label {
+    padding-inline-start: 0.2rem;
+    padding-block-end: 0.2rem;
+}
+
+.sign-up-form > input {
+    margin-block-end: 1rem;
+}
