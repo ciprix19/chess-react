@@ -1,0 +1,14 @@
+{
+    "users": [
+        {
+            "id": 1,
+            "email": "test",
+            "hashedPassword": "$2b$10$ntjqUz4j1.LNU9E8L51qwuBKj5GDseBmOAmEK61605kFw9pi.dYVy"
+        },
+        {
+            "id": 2,
+            "email": "asd",
+            "hashedPassword": "$2b$10$2Fg/WF0YWxxYfr6r2qG2MuQY8ztx79gpfD1dxfFuZxKirK1ndDgye"
+        }
+    ]
+}

@@ -1,0 +1,7 @@
+{
+    "port": "3000",
+    "refreshTokensURL": "./src/db/refreshTokens.json",
+    "usersURL": "./src/db/users.json",
+    "secretKey": "secret-key",
+    "expiresIn": "15s"
+}
