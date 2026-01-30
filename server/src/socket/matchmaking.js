@@ -2,10 +2,10 @@ let matchId = 0;
 let waitingQueue = [];
 const matches = new Map();
 
-function createMatch(player, socket) {
+function createMatch(socket) {
     const match = {
         id: `match-${matchId++}`,
-        players: [player],
+        players: [socket.user],
         sockets: [socket.id]
     }
     waitingQueue.push(match);
@@ -16,14 +16,14 @@ function createMatch(player, socket) {
     return match;
 }
 
-function findMatch(player, socket, io) {
+function findMatch(socket, io) {
     const match = waitingQueue.shift();
 
     if (!match) {
-        return createMatch(player, socket);
+        return createMatch(socket);
     }
 
-    match.players.push(player);
+    match.players.push(socket.user);
     match.sockets.push(socket.id);
 
     socket.join(match.id);
@@ -34,8 +34,8 @@ function findMatch(player, socket, io) {
     return match;
 }
 
-function removeMatchFromQueue(socketId) {
-    const index = waitingQueue.findIndex(match => match.sockets.includes(socketId));
+function removeMatchFromQueue(socket) {
+    const index = waitingQueue.findIndex(match => match.sockets.includes(socket.id));
 
     if (index !== -1) {
         waitingQueue.slice(index, 1);

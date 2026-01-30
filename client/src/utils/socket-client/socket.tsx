@@ -1,0 +1,21 @@
+import { useContext } from 'react';
+import { io } from 'socket.io-client';
+import { AuthContext } from '../context/authContext';
+
+const URL = 'http://localhost:3000';
+
+export const socket = io(URL, {
+    auth: {
+        token: null
+    },
+    autoConnect: false
+});
+
+// export function createSocket(accessToken: string) {
+//     return io(URL, {
+//         auth: {
+//             token: accessToken
+//         },
+//         autoConnect: false
+//     })
+// }

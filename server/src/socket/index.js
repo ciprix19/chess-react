@@ -1,17 +1,18 @@
+const { findMatch, createMatch, removeMatchFromQueue } = require('./matchmaking');
+const jwt = require('jsonwebtoken');
+const socketAuth = require('./auth')
+
 function initSocket(io) {
-    const {
-        findMatch,
-        createMatch,
-        removeMatchFromQueue
-    } = require('./matchmaking');
+
+    io.use(socketAuth);
 
     io.on('connection', (socket) => {
         console.log(`User connected: ${socket.id}`);
 
-        socket.on('find-match', (data) => {
+        socket.on('find-match', () => {
             // matchmaking
-            console.log(data);
-            const match = findMatch(data.user, socket, io);
+            console.log(socket.user);
+            const match = findMatch(socket, io);
             if (match.players.length === 2) {
                 io.in(match.id).emit('game-ready', {
                     matchId: match.id,
@@ -26,6 +27,7 @@ function initSocket(io) {
 
         socket.on('disconnect', () => {
             console.log('Socket disconnected', socket.id);
+            removeMatchFromQueue(socket);
         })
     });
 }
