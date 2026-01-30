@@ -9,6 +9,16 @@
             "id": 2,
             "email": "asd",
             "hashedPassword": "$2b$10$2Fg/WF0YWxxYfr6r2qG2MuQY8ztx79gpfD1dxfFuZxKirK1ndDgye"
+        },
+        {
+            "id": 3,
+            "email": "a",
+            "hashedPassword": "$2b$10$5ww6RNSsN.twX9ELnadKY.E0w1tdicME3ODbYOOkVzU2Nl4whJ7ee"
+        },
+        {
+            "id": 4,
+            "email": "b",
+            "hashedPassword": "$2b$10$ZrepZwmkycaaOF8sQKU9nOrDWs0DPG8t5IKg7HsBU6uuDcsAVhix6"
         }
     ]
 }

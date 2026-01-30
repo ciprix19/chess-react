@@ -1,4 +1,4 @@
-const express = require('express')
+const express = require('express');
 const app = express();
 const cors = require('cors');
 const config = require('./src/config.json')
@@ -21,6 +21,24 @@ function logger(req, res, next) {
     next();
 }
 
-app.listen(port, () => {
-    console.log('SERVER RUNNING');
+const http = require('http');
+const { Server } = require('socket.io');
+const server = http.createServer(app);
+
+const io = new Server(server, {
+    cors: {
+        origin: 'http://localhost:5173',
+        methods: ['GET', 'POST'],
+        credentials: true
+    }
 });
+
+require('./src/socket')(io);
+
+server.listen(port, () => {
+    console.log('SERVER RUNNING');
+})
+
+// app.listen(port, () => {
+//     console.log('SERVER RUNNING');
+// });
