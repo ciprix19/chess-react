@@ -1,20 +1,20 @@
 import { Link } from 'react-router-dom';
-import './styles/signup.css'
-import { useSignUpForm } from '../../utils/hooks/useSignUpForm';
+import './styles/login.css'
 import { HeaderCard } from '../../components/header-card';
+import { useLogInForm } from '../../utils/hooks/useLogInForm';
 
-export default function SignUp() {
-    const { fields, setters, state, actions } = useSignUpForm();
+export default function LogIn() {
+    const { fields, setters, state, actions } = useLogInForm();
 
-    async function handleSignUp(e: React.SubmitEvent) {
+    async function handleLogIn(e: React.SubmitEvent) {
         e.preventDefault();
         actions.submit();
     }
 
     return (
         <main>
-            <HeaderCard title='Sign Up'>
-                <form className='sign-up-form' onSubmit={handleSignUp}>
+            <HeaderCard title='Log In'>
+                <form className='log-in-form' onSubmit={handleLogIn}>
 
                     <label htmlFor='email'>Email:</label>
                     <input
@@ -30,20 +30,12 @@ export default function SignUp() {
                         type='password'
                         onChange={(e) => setters.setPassword(e.target.value)}
                     />
-
-                    <label htmlFor='confirm-password'>Confirm Password:</label>
-                    <input
-                        id='confirm-password'
-                        value={fields.confirmPassword}
-                        type='password'
-                        onChange={(e) => setters.setConfirmPassword(e.target.value)}
-                    />
-                    <button type='submit'>Sign Up</button>
+                    <button type='submit'>Log In</button>
                 </form>
 
                 {state.info && <p>{state.info}</p>}
 
-                <p>Already have an account?<Link to='/login'>Log in</Link></p>
+                <label>Don't have an account yet? <Link to='/signup'>Sign up</Link></label>
             </HeaderCard>
         </main>
     );

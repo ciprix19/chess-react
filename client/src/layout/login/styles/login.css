@@ -1,0 +1,13 @@
+.log-in-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.log-in-form > label {
+    padding-inline-start: 0.2rem;
+    padding-block-end: 0.2rem;
+}
+
+.log-in-form > input {
+    margin-block-end: 1rem;
+}
