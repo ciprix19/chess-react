@@ -6,8 +6,14 @@ import PlayerArea from "./player-area/player-area";
 import type { User } from "../../utils/interfaces/user";
 import './styles/play.css'
 
-function ConnectionState({ isConnected } : {isConnected : boolean}) {
-  return <p>Connection state: { '' + isConnected }</p>;
+type GameReadyDataType = {
+    matchId: string,
+    players: Array<User>,
+    you: string
+}
+
+function ConnectionState({ isConnected, user } : { isConnected : boolean, user : User | undefined }) {
+  return <p>Connection state: { user?.email + ' ' + isConnected }</p>;
 }
 
 export default function Play() {
@@ -26,7 +32,6 @@ export default function Play() {
 
         if (!isFindingMatch) {
             socket.auth.token = authContext.authSession.accessToken;
-            console.log(socket);
             socket.connect();
             socket.emit('find-match');
             setIsFindingMatch(true);
@@ -43,29 +48,33 @@ export default function Play() {
             setIsConnected(false);
         }
 
+        function onGameReady(data: GameReadyDataType) {
+            setInfo('match found');
+            // i need timer here... 3 seconds delay type thing
+            try {
+                console.log(data);
+                setCurrentPlayer(data.players.find(p => p.email === data.you));
+                setEnemyPlayer(data.players.find(p => p.email !== data.you));
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
         socket.on('connect', onConnect);
         socket.on('disconnect', onDisconnect);
-
-        socket.on('game-ready', (data) => {
-            setInfo('match found');
-            if (data !== null) {
-                // todo players are not sent correctly... i need to differentiate between them in some other way
-                setCurrentPlayer(data.player1);
-                setEnemyPlayer(data.player2);
-                // i need timer here... 3 seconds delay type thing
-            }
-        });
+        socket.on('game-ready', onGameReady);
 
         return () => {
             socket.off('connect', onConnect);
             socket.off('disconnect', onDisconnect);
+            socket.off('game-ready', onGameReady);
         }
     }, [socket]);
 
     return (
         <main className="play">
             <h1>Chess</h1>
-            <ConnectionState isConnected={ isConnected } />
+            <ConnectionState isConnected={ isConnected } user={authContext.authSession?.user} />
             <div className='three-column-layout'>
                 <div className='card-simple'>
                     <h3>{currentPlayer?.email}</h3>

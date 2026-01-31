@@ -19,6 +19,16 @@
             "id": 4,
             "email": "b",
             "hashedPassword": "$2b$10$ZrepZwmkycaaOF8sQKU9nOrDWs0DPG8t5IKg7HsBU6uuDcsAVhix6"
+        },
+        {
+            "id": 5,
+            "email": "c",
+            "hashedPassword": "$2b$10$P/j6NuJ4klJvwlJCC.XI.Owr7joQOyL0mJw1Lrv8PM/T8CyKR3KaS"
+        },
+        {
+            "id": 6,
+            "email": "d",
+            "hashedPassword": "$2b$10$cSn5N5KN5Ch15YMRnPixKOD4zhI6bWYig83QimzPRFvG3Qov4NFle"
         }
     ]
 }

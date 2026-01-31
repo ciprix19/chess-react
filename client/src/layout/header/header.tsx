@@ -13,6 +13,7 @@ export default function Header() {
     }
 
     async function handleLogout() {
+        toggleMenu();
         const response = await fetch('http://localhost:3000/users/logout', {
             method: 'DELETE',
             credentials: 'include',
@@ -40,7 +41,7 @@ export default function Header() {
                     <li onClick={toggleMenu}>
                         <Link to='/play'>Play</Link>
                     </li>
-                    <li onClick={authContext.authSession !== null ? handleLogout : () => {}}>
+                    <li onClick={authContext.authSession !== null ? handleLogout : toggleMenu}>
                         {authContext.authSession !== null ?
                             <a>Logout</a> :
                             <Link to='/login'>Login</Link>

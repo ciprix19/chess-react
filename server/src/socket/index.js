@@ -14,10 +14,19 @@ function initSocket(io) {
             console.log(socket.user);
             const match = findMatch(socket, io);
             if (match.players.length === 2) {
-                io.in(match.id).emit('game-ready', {
-                    matchId: match.id,
-                    players: match.players
-                });
+                match.sockets.forEach(socketId => {
+                    const s = io.sockets.sockets.get(socketId);
+                    s.emit('game-ready', {
+                        matchId: match.id,
+                        players: match.players,
+                        you: s.user.email
+                    })
+                })
+                // io.in(match.id).emit('game-ready', {
+                //     matchId: match.id,
+                //     players: match.players,
+                //     you: socket.user.email
+                // });
             }
         });
 
