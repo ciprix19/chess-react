@@ -1,0 +1,55 @@
+.chessboard {
+}
+
+.two-column {
+    display: flex;
+}
+
+.column-coordinates {
+    display: flex;
+    width: 100%;
+}
+
+.row-coordinates {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: flex-end;
+}
+.column-coordinates > div,
+.row-coordinates > div {
+    width: 2rem;
+    flex: 1;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+}
+
+.cell {
+    width: 2rem;
+    aspect-ratio: 1/1;
+}
+
+.white {
+    background-color: var(--color-secondary-text);
+}
+
+.black {
+    background-color: var(--color-accent-strong);
+}
+
+@media screen and (width > 720px) {
+    .cell {
+        width: 5rem;
+    }
+
+    /* todo fix this */
+    .column-coordinates > div,
+    .row-coordinates > div {
+        width: 5rem;
+        flex: 1;
+    }
+}

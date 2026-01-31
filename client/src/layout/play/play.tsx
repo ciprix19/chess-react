@@ -75,14 +75,12 @@ export default function Play() {
         <main className="play">
             <h1>Chess</h1>
             <ConnectionState isConnected={ isConnected } user={authContext.authSession?.user} />
-            <div className='three-column-layout'>
-                <div className='card-simple'>
-                    <h3>{currentPlayer?.email}</h3>
-                </div>
-                <h2>VS</h2>
-                <div className='card-simple'>
-                    <h3>{enemyPlayer?.email}</h3>
-                </div>
+            <div className='card-simple'>
+                <h3>{currentPlayer?.email}</h3>
+            </div>
+            <ChessBoard></ChessBoard>
+            <div className='card-simple'>
+                <h3>{enemyPlayer?.email}</h3>
             </div>
             {info && <p>{info}</p>}
             <button onClick={findMatch}>Find Match</button>

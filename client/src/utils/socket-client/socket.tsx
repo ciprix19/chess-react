@@ -1,6 +1,4 @@
-import { useContext } from 'react';
 import { io } from 'socket.io-client';
-import { AuthContext } from '../context/authContext';
 
 const URL = 'http://localhost:3000';
 
