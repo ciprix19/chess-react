@@ -2,15 +2,19 @@ import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../utils/context/authContext";
 import { socket } from "../../utils/socket-client/socket";
 import ChessBoard from "./chessboard/chessboard";
-import PlayerArea from "./player-area/player-area";
 import type { User } from "../../utils/interfaces/user";
 import './styles/play.css'
+import type { SquareType } from "../../utils/interfaces/chess-types";
 
 type GameReadyDataType = {
     matchId: string,
     players: Array<User>,
-    you: string
+    you: string,
+    chessBoard: Array<Array<SquareType>>,
+    piecesColor: string,
+    turn: string,
 }
+
 
 function ConnectionState({ isConnected, user } : { isConnected : boolean, user : User | undefined }) {
   return <p>Connection state: { user?.email + ' ' + isConnected }</p>;
@@ -23,6 +27,13 @@ export default function Play() {
     const [info, setInfo] = useState('idle');
     const [enemyPlayer, setEnemyPlayer] = useState<User>();
     const [currentPlayer, setCurrentPlayer] = useState<User>();
+    const [chessBoard, setChessBoard] = useState<Array<Array<SquareType>>>();
+    const [turn, setTurn] = useState('');
+    const [piecesColor, setPiecesColor] = useState('');
+
+    function handleFlipBoard() {
+        //todo - flipping is a visual thing only -> no need to call backend for this
+    }
 
     const findMatch = () => {
         if (!authContext.authSession) {
@@ -55,6 +66,9 @@ export default function Play() {
                 console.log(data);
                 setCurrentPlayer(data.players.find(p => p.email === data.you));
                 setEnemyPlayer(data.players.find(p => p.email !== data.you));
+                setChessBoard(data.chessBoard);
+                setPiecesColor(data.piecesColor);
+                setTurn(data.turn);
             } catch (error) {
                 console.log(error);
             }
@@ -78,11 +92,12 @@ export default function Play() {
             <div className='card-simple'>
                 <h3>{currentPlayer?.email}</h3>
             </div>
-            <ChessBoard></ChessBoard>
+            {chessBoard && <ChessBoard chessBoard={chessBoard} />}
             <div className='card-simple'>
                 <h3>{enemyPlayer?.email}</h3>
             </div>
             {info && <p>{info}</p>}
+            <button onClick={handleFlipBoard}>Flip board</button>
             <button onClick={findMatch}>Find Match</button>
         </main>
     );
