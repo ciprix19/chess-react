@@ -6,7 +6,9 @@ function createMatch(socket) {
     const match = {
         id: `match-${matchId++}`,
         players: [ { id:socket.user.id, email: socket.user.email } ],
-        sockets: [socket.id]
+        sockets: [socket.id],
+        chessBoard: null,
+        turn: 'white'
     }
     waitingQueue.push(match);
     matches.set(match.id, match);
@@ -33,6 +35,14 @@ function findMatch(socket, io) {
     return match;
 }
 
+function getMatchById(matchId) {
+    return matches.get(matchId);
+}
+
+function getAllMatches() {
+    return matches;
+}
+
 function removeMatchFromQueue(socket) {
     const index = waitingQueue.findIndex(match => match.sockets.includes(socket.id));
 
@@ -44,5 +54,7 @@ function removeMatchFromQueue(socket) {
 module.exports = {
     createMatch,
     findMatch,
-    removeMatchFromQueue
+    removeMatchFromQueue,
+    getMatchById,
+    getAllMatches,
 }

@@ -2,18 +2,14 @@
     padding: 2rem;
 }
 
+.position-wrapper {
+    position: relative;
+}
+
 .board {
     display: grid;
     grid-template-columns: repeat(8, 1fr);
     grid-template-rows: repeat(8, 1fr);
-    position: relative;
-    background:
-        repeating-linear-gradient(0deg,
-            var(--color-accent-strong) 0 12.5%,
-            var(--color-secondary-text) 0 25%),
-        repeating-linear-gradient(90deg,
-            var(--color-accent-strong) 0 12.5%,
-            var(--color-secondary-text) 0 25%);
 }
 
 .column-coordinates {
@@ -44,21 +40,51 @@
     justify-content: center;
     align-items: center;
 }
-
-.square img {
-    padding: 0.3rem;
-}
-
-.white {
+/* white squares */
+.square:nth-of-type(16n + 16),
+.square:nth-of-type(16n + 14),
+.square:nth-of-type(16n + 12),
+.square:nth-of-type(16n + 10),
+.square:nth-of-type(16n + 7),
+.square:nth-of-type(16n + 5),
+.square:nth-of-type(16n + 3),
+.square:nth-of-type(16n + 1) {
     background-color: var(--color-secondary-text);
 }
-
-.black {
+/* black squares */
+.square:nth-of-type(16n + 15),
+.square:nth-of-type(16n + 13),
+.square:nth-of-type(16n + 11),
+.square:nth-of-type(16n + 9),
+.square:nth-of-type(16n + 8),
+.square:nth-of-type(16n + 6),
+.square:nth-of-type(16n + 4),
+.square:nth-of-type(16n + 2) {
     background-color: var(--color-accent-strong);
+}
+.square .move-highlight {
+    clip-path: circle(50%);
+    background-color: var(--color-accent);
+
+    width: 0.7rem;
+    height: 0.7rem;
+}
+.square.capture-highlight {
+
+}
+.square.selected {
+    background-color: var(--color-selected);
+}
+.square img {
+    padding: 0.3rem;
 }
 
 @media screen and (width > 720px) {
     .square {
         width: 5rem;
+    }
+    .square .move-highlight {
+        width: 1.2rem;
+        height: 1.2rem;
     }
 }

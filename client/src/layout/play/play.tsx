@@ -4,17 +4,7 @@ import { socket } from "../../utils/socket-client/socket";
 import ChessBoard from "./chessboard/chessboard";
 import type { User } from "../../utils/interfaces/user";
 import './styles/play.css'
-import type { SquareType } from "../../utils/interfaces/chess-types";
-
-type GameReadyDataType = {
-    matchId: string,
-    players: Array<User>,
-    you: string,
-    chessBoard: Array<Array<SquareType>>,
-    piecesColor: string,
-    turn: string,
-}
-
+import type { LegalMoves, MatchType, MoveType, SquareType } from "../../utils/interfaces/chess-types";
 
 function ConnectionState({ isConnected, user } : { isConnected : boolean, user : User | undefined }) {
   return <p>Connection state: { user?.email + ' ' + isConnected }</p>;
@@ -27,9 +17,7 @@ export default function Play() {
     const [info, setInfo] = useState('idle');
     const [enemyPlayer, setEnemyPlayer] = useState<User>();
     const [currentPlayer, setCurrentPlayer] = useState<User>();
-    const [chessBoard, setChessBoard] = useState<Array<Array<SquareType>>>();
-    const [turn, setTurn] = useState('');
-    const [piecesColor, setPiecesColor] = useState('');
+    const [match, setMatch] = useState<MatchType>();
 
     function handleFlipBoard() {
         //todo - flipping is a visual thing only -> no need to call backend for this
@@ -59,16 +47,23 @@ export default function Play() {
             setIsConnected(false);
         }
 
-        function onGameReady(data: GameReadyDataType) {
+        function onGameReady(data: MatchType) {
             setInfo('match found');
             // i need timer here... 3 seconds delay type thing
             try {
                 console.log(data);
+                const match : MatchType = {
+                    matchId: data.matchId,
+                    players: data.players,
+                    chessBoard: data.chessBoard,
+                    legalMoves: data.legalMoves,
+                    piecesColor: data.piecesColor,
+                    turn: data.turn,
+                    you: data.you
+                }
+                setMatch(match);
                 setCurrentPlayer(data.players.find(p => p.email === data.you));
                 setEnemyPlayer(data.players.find(p => p.email !== data.you));
-                setChessBoard(data.chessBoard);
-                setPiecesColor(data.piecesColor);
-                setTurn(data.turn);
             } catch (error) {
                 console.log(error);
             }
@@ -90,11 +85,11 @@ export default function Play() {
             <h1>Chess</h1>
             <ConnectionState isConnected={ isConnected } user={authContext.authSession?.user} />
             <div className='card-simple'>
-                <h3>{currentPlayer?.email}</h3>
-            </div>
-            {chessBoard && <ChessBoard chessBoard={chessBoard} />}
-            <div className='card-simple'>
                 <h3>{enemyPlayer?.email}</h3>
+            </div>
+            {match && <ChessBoard match={match}/>}
+            <div className='card-simple'>
+                <h3>{currentPlayer?.email}</h3>
             </div>
             {info && <p>{info}</p>}
             <button onClick={handleFlipBoard}>Flip board</button>
