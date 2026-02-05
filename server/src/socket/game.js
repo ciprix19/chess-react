@@ -108,20 +108,69 @@ function computePawnMoves(chessBoard, row, col, color) {
 
 function computeBishopMoves(chessBoard, row, col, color) {
     const moves = [];
-    const direction = [];
+    const xDirection = [1,  1, -1, -1];
+    const yDirection = [1, -1, -1,  1];
+
+    for (let i = 0; i < 4; i++) {
+        let newRow = row + xDirection[i];
+        let newCol = col + yDirection[i];
+        while(chessBoard[newRow] && chessBoard[newRow][newCol]) {
+            if (chessBoard[newRow][newCol].piece !== null) {
+                moves.push({ row: newRow, col: newCol });
+            } else {
+                if (chessBoard[newRow][newCol].piece.color !== color) {
+                    moves.push({ row: newRow, col: newCol });
+                }
+                break;
+            }
+            newRow += xDirection[i];
+            newCol += yDirection[i];
+        }
+    }
 
     return moves;
 }
 
 function computeKnightMoves(chessBoard, row, col, color) {
     const moves = [];
-    const direction = [];
+    const xDirection = [1, 2,  2,  1, -1, -2, -2, -1];
+    const yDirection = [2, 1, -1, -2, -2, -1,  1,  2];
+
+    for (let i = 0; i < 8; i++) {
+        let newRow = row + xDirection[i];
+        let newCol = col + yDirection[i];
+        if (
+            chessBoard[newRow] &&
+            chessBoard[newRow][newCol] &&
+            (chessBoard[newRow][newCol].piece === null || chessBoard[newRow][newCol].piece.color !== color)
+        )
+        moves.push({ row: newRow, col: newCol });
+    }
 
     return moves;
 }
 
 function computeRookMoves(chessBoard, row, col, color) {
     const moves = [];
+    const xDirection = [0, 1,  0, -1];
+    const yDirection = [1, 0, -1,  0];
+
+    for (let i = 0; i < 4; i++) {
+        let newRow = row + xDirection[i];
+        let newCol = col + yDirection[i];
+        while(chessBoard[newRow] && chessBoard[newRow][newCol]) {
+            if (chessBoard[newRow][newCol].piece !== null) {
+                moves.push({ row: newRow, col: newCol });
+            } else {
+                if (chessBoard[newRow][newCol].piece.color !== color) {
+                    moves.push({ row: newRow, col: newCol });
+                }
+                break;
+            }
+            newRow += xDirection[i];
+            newCol += yDirection[i];
+        }
+    }
 
     return moves;
 }
@@ -138,6 +187,7 @@ function computeKingMoves(chessBoard, row, col, color) {
             chessBoard[newRow] &&
             chessBoard[newRow][newCol] &&
             chessBoard[newRow][newCol].piece === null
+            (chessBoard[newRow][newCol].piece === null || chessBoard[newRow][newCol].piece.color !== color)
         )
         moves.push({ row: newRow, col: newCol });
     }
@@ -146,6 +196,25 @@ function computeKingMoves(chessBoard, row, col, color) {
 
 function computeQueenMoves(chessBoard, row, col, color) {
     const moves = [];
+    const xDirection = [0, 1,  0, -1, 1,  1, -1, -1];
+    const yDirection = [1, 0, -1,  0, 1, -1, -1,  1];
+
+    for (let i = 0; i < 8; i++) {
+        let newRow = row + xDirection[i];
+        let newCol = col + yDirection[i];
+        while(chessBoard[newRow] && chessBoard[newRow][newCol]) {
+            if (chessBoard[newRow][newCol].piece !== null) {
+                moves.push({ row: newRow, col: newCol });
+            } else {
+                if (chessBoard[newRow][newCol].piece.color !== color) {
+                    moves.push({ row: newRow, col: newCol });
+                }
+                break;
+            }
+            newRow += xDirection[i];
+            newCol += yDirection[i];
+        }
+    }
 
     return moves;
 }
@@ -157,41 +226,43 @@ function computeLegalMoves(chessBoard, piecesColor) {
     //legal moves for pawn
     for (let row = 0; row < boardSize; row++) {
         for (let col = 0; col < boardSize; col++) {
-            if (chessBoard[row][col].piece && chessBoard[row][col].piece.type === 'pawn' && chessBoard[row][col].piece.color === piecesColor) {
-                legalMoves.push({
-                    from: { row: row, col: col},
-                    to: computePawnMoves(chessBoard, row, col, piecesColor)
-                });
-            }
-            if (chessBoard[row][col].piece && chessBoard[row][col].piece.type === 'bishop' && chessBoard[row][col].piece.color === piecesColor) {
-                legalMoves.push({
-                    from: { row: row, col: col},
-                    to: computeBishopMoves(chessBoard, row, col, piecesColor)
-                });
-            }
-            if (chessBoard[row][col].piece && chessBoard[row][col].piece.type === 'knight' && chessBoard[row][col].piece.color === piecesColor) {
-                legalMoves.push({
-                    from: { row: row, col: col},
-                    to: computeKnightMoves(chessBoard, row, col, piecesColor)
-                });
-            }
-            if (chessBoard[row][col].piece && chessBoard[row][col].piece.type === 'rook' && chessBoard[row][col].piece.color === piecesColor) {
-                legalMoves.push({
-                    from: { row: row, col: col},
-                    to: computeRookMoves(chessBoard, row, col, piecesColor)
-                });
-            }
-            if (chessBoard[row][col].piece && chessBoard[row][col].piece.type === 'king' && chessBoard[row][col].piece.color === piecesColor) {
-                legalMoves.push({
-                    from: { row: row, col: col},
-                    to: computeKingMoves(chessBoard, row, col, piecesColor)
-                });
-            }
-            if (chessBoard[row][col].piece && chessBoard[row][col].piece.type === 'queen' && chessBoard[row][col].piece.color === piecesColor) {
-                legalMoves.push({
-                    from: { row: row, col: col},
-                    to: computeQueenMoves(chessBoard, row, col, piecesColor)
-                });
+            if (chessBoard[row][col].piece && chessBoard[row][col].piece.color === piecesColor) {
+                if (chessBoard[row][col].piece.type === 'pawn') {
+                    legalMoves.push({
+                        from: { row: row, col: col},
+                        to: computePawnMoves(chessBoard, row, col, piecesColor)
+                    });
+                }
+                if (chessBoard[row][col].piece.type === 'bishop') {
+                    legalMoves.push({
+                        from: { row: row, col: col},
+                        to: computeBishopMoves(chessBoard, row, col, piecesColor)
+                    });
+                }
+                if (chessBoard[row][col].piece.type === 'knight') {
+                    legalMoves.push({
+                        from: { row: row, col: col},
+                        to: computeKnightMoves(chessBoard, row, col, piecesColor)
+                    });
+                }
+                if (chessBoard[row][col].piece.type === 'rook') {
+                    legalMoves.push({
+                        from: { row: row, col: col},
+                        to: computeRookMoves(chessBoard, row, col, piecesColor)
+                    });
+                }
+                if (chessBoard[row][col].piece.type === 'king') {
+                    legalMoves.push({
+                        from: { row: row, col: col},
+                        to: computeKingMoves(chessBoard, row, col, piecesColor)
+                    });
+                }
+                if (chessBoard[row][col].piece.type === 'queen') {
+                    legalMoves.push({
+                        from: { row: row, col: col},
+                        to: computeQueenMoves(chessBoard, row, col, piecesColor)
+                    });
+                }
             }
         }
     }
@@ -200,9 +271,37 @@ function computeLegalMoves(chessBoard, piecesColor) {
 }
 
 function validateMove(chessBoard, turn, piecesColor, from, to) {
-    if (chessBoard[to.row][to.col].piece === null && chessBoard[from.row][from.col].piece.color === piecesColor && turn === piecesColor) {
-        return true;
+    if (turn !== piecesColor) return false;
+    if (chessBoard[from.row][from.col].piece.color !== piecesColor) return false;
+
+    if (
+        chessBoard[to.row][to.col].piece === null ||
+        (chessBoard[to.row][to.col].piece !== null && chessBoard[to.row][to.col].piece.color !== piecesColor)
+    ) {
+        let legalMoves;
+        // validate if the move is legal nevertheless
+        if (chessBoard[from.row][from.col].piece.type === 'pawn') {
+            legalMoves = computePawnMoves(chessBoard, from.row, from.col, piecesColor);
+        }
+        if (chessBoard[from.row][from.col].piece.type === 'bishop') {
+            legalMoves = computeBishopMoves(chessBoard, from.row, from.col, piecesColor);
+        }
+        if (chessBoard[from.row][from.col].piece.type === 'knight') {
+            legalMoves = computeKnightMoves(chessBoard, from.row, from.col, piecesColor);
+        }
+        if (chessBoard[from.row][from.col].piece.type === 'rook') {
+            legalMoves = computeRookMoves(chessBoard, from.row, from.col, piecesColor);
+        }
+        if (chessBoard[from.row][from.col].piece.type === 'queen') {
+            legalMoves = computeQueenMoves(chessBoard, from.row, from.col, piecesColor);
+        }
+        if (chessBoard[from.row][from.col].piece.type === 'king') {
+            legalMoves = computeKingMoves(chessBoard, from.row, from.col, piecesColor);
+        }
+        console.log(legalMoves);
+        return legalMoves.some(m => m.row === to.row && m.col === to.col);
     }
+
     return false;
 }
 

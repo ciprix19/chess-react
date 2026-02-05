@@ -4,7 +4,7 @@ import { socket } from "../../utils/socket-client/socket";
 import ChessBoard from "./chessboard/chessboard";
 import type { User } from "../../utils/interfaces/user";
 import './styles/play.css'
-import type { LegalMoves, MatchType, MoveType, SquareType } from "../../utils/interfaces/chess-types";
+import type { BoardUpdatedType, LegalMoves, MatchType, MoveType, SquareType } from "../../utils/interfaces/chess-types";
 
 function ConnectionState({ isConnected, user } : { isConnected : boolean, user : User | undefined }) {
   return <p>Connection state: { user?.email + ' ' + isConnected }</p>;
@@ -48,22 +48,43 @@ export default function Play() {
         }
 
         function onGameReady(data: MatchType) {
-            setInfo('match found');
             // i need timer here... 3 seconds delay type thing
             try {
                 console.log(data);
                 const match : MatchType = {
                     matchId: data.matchId,
                     players: data.players,
+                    playerBlackPieces: data.playerBlackPieces,
+                    playerWhitePieces: data.playerWhitePieces,
+                    you: data.you,
                     chessBoard: data.chessBoard,
                     legalMoves: data.legalMoves,
                     piecesColor: data.piecesColor,
                     turn: data.turn,
-                    you: data.you
                 }
+                setInfo('White moves');
                 setMatch(match);
-                setCurrentPlayer(data.players.find(p => p.email === data.you));
-                setEnemyPlayer(data.players.find(p => p.email !== data.you));
+                setCurrentPlayer(data.players.find(p => p.email === data.you.email));
+                setEnemyPlayer(data.players.find(p => p.email !== data.you.email));
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
+        function onBoardUpdated(data: BoardUpdatedType) {
+            try {
+                setMatch(prev => {
+                    if (!prev) return prev;
+
+                    return {
+                        ...prev,
+                        chessBoard: data.chessBoard,
+                        legalMoves: data.legalMoves,
+                        turn: data.turn,
+                    };
+                });
+
+                setInfo(`${data.turn} moves`);
             } catch (error) {
                 console.log(error);
             }
@@ -72,11 +93,13 @@ export default function Play() {
         socket.on('connect', onConnect);
         socket.on('disconnect', onDisconnect);
         socket.on('game-ready', onGameReady);
+        socket.on('board-updated', onBoardUpdated);
 
         return () => {
             socket.off('connect', onConnect);
             socket.off('disconnect', onDisconnect);
             socket.off('game-ready', onGameReady);
+            socket.off('board-updated', onBoardUpdated);
         }
     }, [socket]);
 

@@ -10,7 +10,7 @@ export type SquareType = {
     squareId: number,
     row: number,
     col: number,
-    piece: PieceType | undefined
+    piece: PieceType
 }
 
 export type CoordinateType = {
@@ -31,9 +31,18 @@ export type LegalMoves = {
 export type MatchType = {
     matchId: string,
     players: Array<User>,
-    you: string,
+    playerBlackPieces: User,
+    playerWhitePieces: User,
+    you: User,
     chessBoard: Array<Array<SquareType>>,
-    piecesColor: string,
     legalMoves: Array<LegalMoves>,
-    turn: string,
+    piecesColor: string,
+    turn: string
+}
+
+export type BoardUpdatedType = {
+    matchId: string,
+    chessBoard: Array<Array<SquareType>>,
+    legalMoves: Array<LegalMoves>,
+    turn: string
 }

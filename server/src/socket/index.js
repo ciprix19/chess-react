@@ -9,31 +9,47 @@ function initSocket(io) {
     io.on('connection', (socket) => {
         console.log(`User connected: ${socket.id}`);
 
-        let chessBoard;
         socket.on('find-match', () => {
             // matchmaking
             // console.log(socket.user);
             const match = findMatch(socket, io);
             if (match.players.length === 2) {
                 match.chessBoard = generateChessBoard();
-                let piecesColor = Math.random() < 0.5 ? 'white' : 'black';
-                let firstPlayerColorChosen = false;
-                match.sockets.forEach(socketId => {
-                    const s = io.sockets.sockets.get(socketId);
-                    if (firstPlayerColorChosen === true) {
-                        piecesColor === 'white' ? piecesColor = 'black' : piecesColor = 'white';
-                    }
-                    const legalMoves = computeLegalMoves(match.chessBoard, piecesColor);
-                    s.emit('game-ready', {
-                        matchId: match.id,
-                        players: match.players,
-                        you: s.user.email,
-                        piecesColor: piecesColor,
-                        chessBoard: match.chessBoard,
-                        legalMoves: legalMoves,
-                        turn: match.turn
-                    });
-                    firstPlayerColorChosen = true;
+
+                const whiteIndex = Math.random() < 0.5 ? 0 : 1;
+                const blackIndex = whiteIndex === 0 ? 1 : 0;
+
+                const whiteSocketId = match.sockets[whiteIndex];
+                const blackSocketId = match.sockets[blackIndex];
+
+                const whiteSocket = io.sockets.sockets.get(whiteSocketId);
+                const blackSocket = io.sockets.sockets.get(blackSocketId);
+
+                match.playerWhitePieces = { id: whiteSocket.user.id, email: whiteSocket.user.email };
+                match.playerBlackPieces = { id: blackSocket.user.id, email: blackSocket.user.email };
+
+                whiteSocket.emit('game-ready', {
+                    matchId: match.id,
+                    players: match.players,
+                    playerWhitePieces: match.playerWhitePieces,
+                    playerBlackPieces: match.playerBlackPieces,
+                    you: { id: whiteSocket.user.id, email: whiteSocket.user.email },
+                    chessBoard: match.chessBoard,
+                    legalMoves: computeLegalMoves(match.chessBoard, 'white'),
+                    piecesColor: 'white',
+                    turn: match.turn
+                });
+
+                blackSocket.emit('game-ready', {
+                    matchId: match.id,
+                    players: match.players,
+                    playerWhitePieces: match.playerWhitePieces,
+                    playerBlackPieces: match.playerBlackPieces,
+                    you: { id: blackSocket.user.id, email: blackSocket.user.email },
+                    chessBoard: match.chessBoard,
+                    legalMoves: computeLegalMoves(match.chessBoard, 'black'),
+                    piecesColor: 'black',
+                    turn: match.turn
                 });
             }
         });
@@ -41,17 +57,46 @@ function initSocket(io) {
         socket.on('client-move', (data) => {
             console.log(data);
             match = getMatchById(data.matchId);
-            if (validateMove(match.chessBoard, match.turn, data.piecesColor, data.from, data.to)) {
-                match.chessBoard = applyMove(match.chessBoard, data.from, data.to);
-                match.turn = match.turn === 'white' ? 'black' : 'white';
-                // todo how do i know the color of each player? i need to send the legalMoves after applying the move to both players...
-                match.sockets.forEach(socketId => {
-                    const s = io.sockets.sockets.get(socketId);
-                    s.emit('board-updated', {
 
-                    });
-                })
+            if (!match) return;
+
+            let playerColor = null;
+            if (socket.user.email === match.playerWhitePieces.email) {
+                playerColor = 'white';
+            } else if (socket.user.email === match.playerBlackPieces.email) {
+                playerColor = 'black';
+            } else {
+                return;
             }
+
+            if (match.turn !== playerColor) {
+                return;
+            }
+
+            const isValid = validateMove(match.chessBoard, match.turn, playerColor, data.from, data.to)
+
+            if (!isValid) return;
+
+            match.chessBoard = applyMove(match.chessBoard, data.from, data.to);
+            match.turn = match.turn === 'white' ? 'black' : 'white';
+
+            match.sockets.forEach(socketId => {
+                const s = io.sockets.sockets.get(socketId);
+                if (!s) return;
+
+                const color =
+                    s.user.email === match.playerWhitePieces.email
+                        ? 'white'
+                        : 'black';
+
+                s.emit('board-updated', {
+                    matchId: match.id,
+                    chessBoard: match.chessBoard,
+                    legalMoves: computeLegalMoves(match.chessBoard, color),
+                    piecesColor: color,
+                    turn: match.turn,
+                });
+            });
         });
 
         socket.on('disconnect', () => {

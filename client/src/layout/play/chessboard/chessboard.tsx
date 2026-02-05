@@ -1,4 +1,4 @@
-import { useEffect, useState, type MouseEvent } from 'react';
+import { useEffect, useState, type MouseEvent, type ReactNode } from 'react';
 import './styles/chessboard.css'
 import type { CoordinateType, LegalMoves, MatchType, MoveType, PieceType, SquareType } from '../../../utils/interfaces/chess-types';
 import { socket } from '../../../utils/socket-client/socket';
@@ -17,9 +17,18 @@ function Piece({ piece } : { piece: PieceType }) {
     );
 }
 
-function MoveHighlight() {
+function MoveHighlight({ isHighlighted, piece, children } : { isHighlighted: boolean, piece: PieceType, children: ReactNode }) {
     return (
-        <div className='move-highlight'></div>
+        <>
+            {isHighlighted ?
+                <div className={`${piece === null ? 'move-highlight' : 'capture-highlight'}`}>
+                    {children}
+                </div> :
+                <div>
+                    {children}
+                </div>
+            }
+        </>
     );
 }
 
@@ -29,11 +38,25 @@ function Square({ squareId, row, col, piece, onClick, isSelected, isHighlighted 
         isHighlighted: boolean;
     }) {
 
+    const [isRightClicked, setIsRightClicked] = useState(false);
+
+    function handleRightClick(e: React.MouseEvent<HTMLDivElement>) {
+        if (e.button === 2) {
+            e.preventDefault();
+            setIsRightClicked(!isRightClicked);
+            console.log(piece);
+        }
+    }
+
     return (
-        <div key={squareId} className={`square ${isSelected ? 'selected' : ''}`}
-      onClick={() => onClick(row, col)}>
-            {isHighlighted && <MoveHighlight />}
-            {piece && <Piece piece={piece}/>}
+        <div key={squareId}
+            className={`square ${isSelected || isRightClicked ? 'selected' : ''}`}
+            onClick={() => onClick(row, col)}
+            onContextMenu={e => handleRightClick(e)}
+        >
+            <MoveHighlight isHighlighted={isHighlighted} piece={piece}>
+                {piece && <Piece piece={piece}/>}
+            </MoveHighlight>
             {/* <p>{displayRowValuesReversed[row]}, {displayColumnValues[col]}</p> */}
             {/* <p>{row}, {col}</p> */}
         </div>

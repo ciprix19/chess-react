@@ -39,6 +39,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    border: 0.1rem solid var(--color-border);
 }
 /* white squares */
 .square:nth-of-type(16n + 16),
@@ -69,14 +70,14 @@
     width: 0.7rem;
     height: 0.7rem;
 }
-.square.capture-highlight {
-
-}
 .square.selected {
     background-color: var(--color-selected);
 }
+.square .capture-highlight {
+    background-color: var(--color-selected);
+}
 .square img {
-    padding: 0.3rem;
+    padding: 0.5rem;
 }
 
 @media screen and (width > 720px) {

@@ -8,6 +8,8 @@ function createMatch(socket) {
         players: [ { id:socket.user.id, email: socket.user.email } ],
         sockets: [socket.id],
         chessBoard: null,
+        playerWhitePieces: null,
+        playerBlackPieces: null,
         turn: 'white'
     }
     waitingQueue.push(match);
@@ -25,7 +27,7 @@ function findMatch(socket, io) {
         return createMatch(socket);
     }
 
-    match.players.push({ id:socket.user.id, email: socket.user.email });
+    match.players.push({ id: socket.user.id, email: socket.user.email });
     match.sockets.push(socket.id);
     socket.join(match.id);
 
