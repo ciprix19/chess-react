@@ -115,7 +115,7 @@ function computeBishopMoves(chessBoard, row, col, color) {
         let newRow = row + xDirection[i];
         let newCol = col + yDirection[i];
         while(chessBoard[newRow] && chessBoard[newRow][newCol]) {
-            if (chessBoard[newRow][newCol].piece !== null) {
+            if (chessBoard[newRow][newCol].piece === null) {
                 moves.push({ row: newRow, col: newCol });
             } else {
                 if (chessBoard[newRow][newCol].piece.color !== color) {
@@ -159,7 +159,7 @@ function computeRookMoves(chessBoard, row, col, color) {
         let newRow = row + xDirection[i];
         let newCol = col + yDirection[i];
         while(chessBoard[newRow] && chessBoard[newRow][newCol]) {
-            if (chessBoard[newRow][newCol].piece !== null) {
+            if (chessBoard[newRow][newCol].piece === null) {
                 moves.push({ row: newRow, col: newCol });
             } else {
                 if (chessBoard[newRow][newCol].piece.color !== color) {
@@ -186,7 +186,6 @@ function computeKingMoves(chessBoard, row, col, color) {
         if (
             chessBoard[newRow] &&
             chessBoard[newRow][newCol] &&
-            chessBoard[newRow][newCol].piece === null
             (chessBoard[newRow][newCol].piece === null || chessBoard[newRow][newCol].piece.color !== color)
         )
         moves.push({ row: newRow, col: newCol });
@@ -203,7 +202,7 @@ function computeQueenMoves(chessBoard, row, col, color) {
         let newRow = row + xDirection[i];
         let newCol = col + yDirection[i];
         while(chessBoard[newRow] && chessBoard[newRow][newCol]) {
-            if (chessBoard[newRow][newCol].piece !== null) {
+            if (chessBoard[newRow][newCol].piece === null) {
                 moves.push({ row: newRow, col: newCol });
             } else {
                 if (chessBoard[newRow][newCol].piece.color !== color) {
@@ -223,7 +222,7 @@ function computeQueenMoves(chessBoard, row, col, color) {
 function computeLegalMoves(chessBoard, piecesColor) {
     let legalMoves = [];
 
-    //legal moves for pawn
+    // todo: handle chess rules (check src/db/rules.txt)
     for (let row = 0; row < boardSize; row++) {
         for (let col = 0; col < boardSize; col++) {
             if (chessBoard[row][col].piece && chessBoard[row][col].piece.color === piecesColor) {

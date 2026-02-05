@@ -1,0 +1,31 @@
+
+
+1. pins
+    - bishops, rooks, queens can pin
+    - the pinned piece cannot move
+2. en-passant
+    - for ranks 4 / 5, pawns can capture enemy pawns that try to move 2 squares
+    - enemy pawn on rank 7 pushes to rank 5
+    - pawn that is on the 5th rank can take the pawn by going from 5 to 6
+3. checks
+    - the king is in check when an enemy piece can see it
+    - enemy must escape the check
+    - legal moves for escaping check:
+        - blocking with another piece
+        - moving the king
+        - capture the enemy piece
+            * WARNING THERE CAN BE MORE THAN ONE PIECE THAT ATTACKS THE KING (DISCOVERED ATTACKS) *
+            * IN THIS CASE, CAPTURING BOTH PIECES AT THE SAME TIME IS INHERENTLY NOT POSSIBLEPOSSIBLE *
+        - cannot castle!!!
+4. castling
+    - king and rook did not move at all
+    - there should be not pieces between the king and the rook
+    - the squares that the king travel can be attacked (be on check)
+    - king cannot be in check and castle
+5. checkmate
+    - no legal moves :D
+    - cannot block with any other piece
+    - cannot move from check (no available square to move to)
+    - cannot capture the enemy piece
+        * WARNING THERE CAN BE MORE THAN ONE PIECE THAT ATTACKS THE KING (DISCOVERED ATTACKS) *
+        * IN THIS CASE, CAPTURING BOTH PIECES AT THE SAME TIME IS INHERENTLY NOT POSSIBLE *
