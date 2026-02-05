@@ -12,6 +12,13 @@
     grid-template-rows: repeat(8, 1fr);
 }
 
+.board.flipped {
+    transform: rotate(180deg);
+}
+.board.flipped .square {
+    transform: rotate(180deg);
+}
+
 .column-coordinates {
     display: flex;
     width: 100%;

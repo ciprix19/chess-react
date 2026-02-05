@@ -44,5 +44,6 @@ export type BoardUpdatedType = {
     matchId: string,
     chessBoard: Array<Array<SquareType>>,
     legalMoves: Array<LegalMoves>,
+    piecesColor: string,
     turn: string
 }

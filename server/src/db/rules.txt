@@ -1,4 +1,5 @@
 
+CHESS RULES
 
 1. pins
     - bishops, rooks, queens can pin

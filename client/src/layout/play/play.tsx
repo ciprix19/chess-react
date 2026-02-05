@@ -4,7 +4,7 @@ import { socket } from "../../utils/socket-client/socket";
 import ChessBoard from "./chessboard/chessboard";
 import type { User } from "../../utils/interfaces/user";
 import './styles/play.css'
-import type { BoardUpdatedType, LegalMoves, MatchType, MoveType, SquareType } from "../../utils/interfaces/chess-types";
+import type { BoardUpdatedType, MatchType, SquareType } from "../../utils/interfaces/chess-types";
 
 function ConnectionState({ isConnected, user } : { isConnected : boolean, user : User | undefined }) {
   return <p>Connection state: { user?.email + ' ' + isConnected }</p>;
@@ -19,8 +19,9 @@ export default function Play() {
     const [currentPlayer, setCurrentPlayer] = useState<User>();
     const [match, setMatch] = useState<MatchType>();
 
-    function handleFlipBoard() {
+    function handleFlipBoard(chessBoard : Array<Array<SquareType>>) {
         //todo - flipping is a visual thing only -> no need to call backend for this
+        // return chessBoard.map(row => [...row].reverse()).reverse();
     }
 
     const findMatch = () => {
@@ -58,10 +59,12 @@ export default function Play() {
                     playerWhitePieces: data.playerWhitePieces,
                     you: data.you,
                     chessBoard: data.chessBoard,
+                    // chessBoard: data.chessBoard,
                     legalMoves: data.legalMoves,
                     piecesColor: data.piecesColor,
                     turn: data.turn,
                 }
+
                 setInfo('White moves');
                 setMatch(match);
                 setCurrentPlayer(data.players.find(p => p.email === data.you.email));
@@ -115,7 +118,7 @@ export default function Play() {
                 <h3>{currentPlayer?.email}</h3>
             </div>
             {info && <p>{info}</p>}
-            <button onClick={handleFlipBoard}>Flip board</button>
+            <button>Flip board</button>
             <button onClick={findMatch}>Find Match</button>
         </main>
     );

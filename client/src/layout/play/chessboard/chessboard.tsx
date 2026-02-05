@@ -59,6 +59,7 @@ function Square({ squareId, row, col, piece, onClick, isSelected, isHighlighted 
             </MoveHighlight>
             {/* <p>{displayRowValuesReversed[row]}, {displayColumnValues[col]}</p> */}
             {/* <p>{row}, {col}</p> */}
+            {/* <p>{squareId}</p> */}
         </div>
     );
 }
@@ -113,7 +114,7 @@ export default function ChessBoard({ match } : { match: MatchType }) {
                         return <div key={val}>{val}</div>
                     })}
                 </div>
-                <div className='board'>
+                <div className={`board ${match.piecesColor === 'black' ? 'flipped' : ''}`}>
                     {match.chessBoard.map((row) => {
                         return row.map((val) => {
                             const isSelected = selectedSquare?.row === val.row && selectedSquare?.col === val.col;
