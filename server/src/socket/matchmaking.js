@@ -8,9 +8,15 @@ function createMatch(socket) {
         players: [ { id:socket.user.id, email: socket.user.email } ],
         sockets: [socket.id],
         chessBoard: null,
+        //todo: moveHistory
+        movesHistory: null,
         playerWhitePieces: null,
         playerBlackPieces: null,
-        turn: 'white'
+        turn: 'white',
+        gameStatus: {
+            state: 'playing',
+            winner: null
+        }
     }
     waitingQueue.push(match);
     matches.set(match.id, match);

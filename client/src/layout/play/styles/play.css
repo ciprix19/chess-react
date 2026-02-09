@@ -1,3 +1,7 @@
 .play {
     text-align: center;
 }
+
+.play > div {
+    padding: 1rem;
+}

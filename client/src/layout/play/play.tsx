@@ -63,6 +63,7 @@ export default function Play() {
                     legalMoves: data.legalMoves,
                     piecesColor: data.piecesColor,
                     turn: data.turn,
+                    gameStatus: data.gameStatus
                 }
 
                 setInfo('White moves');
@@ -84,6 +85,7 @@ export default function Play() {
                         chessBoard: data.chessBoard,
                         legalMoves: data.legalMoves,
                         turn: data.turn,
+                        gameStatus: data.gameStatus
                     };
                 });
 
@@ -107,19 +109,21 @@ export default function Play() {
     }, [socket]);
 
     return (
-        <main className="play">
-            <h1>Chess</h1>
-            <ConnectionState isConnected={ isConnected } user={authContext.authSession?.user} />
-            <div className='card-simple'>
-                <h3>{enemyPlayer?.email}</h3>
+        <main className="play two-column-layout">
+            <div>
+                <div className='card-simple'>
+                    <h3>Player: {enemyPlayer?.email}</h3>
+                </div>
+                {match && <ChessBoard match={match}/>}
+                <div className='card-simple'>
+                    <h3>Player: {currentPlayer?.email}</h3>
+                </div>
             </div>
-            {match && <ChessBoard match={match}/>}
-            <div className='card-simple'>
-                <h3>{currentPlayer?.email}</h3>
+            <div>
+                {info && <h2>{info}</h2>}
+                <button>Flip board</button>
+                <button onClick={findMatch}>Find Match</button>
             </div>
-            {info && <p>{info}</p>}
-            <button>Flip board</button>
-            <button onClick={findMatch}>Find Match</button>
         </main>
     );
 }

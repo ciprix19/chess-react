@@ -1,6 +1,7 @@
 .sign-up-form {
     display: flex;
     flex-direction: column;
+    padding: 2rem;
 }
 
 .sign-up-form > label {

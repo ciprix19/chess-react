@@ -37,7 +37,8 @@ function initSocket(io) {
                     chessBoard: match.chessBoard,
                     legalMoves: computeLegalMoves(match.chessBoard, 'white'),
                     piecesColor: 'white',
-                    turn: match.turn
+                    turn: match.turn,
+                    gameStatus: match.gameStatus
                 });
 
                 blackSocket.emit('game-ready', {
@@ -48,8 +49,10 @@ function initSocket(io) {
                     you: { id: blackSocket.user.id, email: blackSocket.user.email },
                     chessBoard: match.chessBoard,
                     legalMoves: computeLegalMoves(match.chessBoard, 'black'),
+                    movesHistory: match.movesHistory,
                     piecesColor: 'black',
-                    turn: match.turn
+                    turn: match.turn,
+                    gameStatus: match.gameStatus
                 });
             }
         });
@@ -95,6 +98,7 @@ function initSocket(io) {
                     legalMoves: computeLegalMoves(match.chessBoard, color),
                     piecesColor: color,
                     turn: match.turn,
+                    gameStatus: match.gameStatus,
                 });
             });
         });

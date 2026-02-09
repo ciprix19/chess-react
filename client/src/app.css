@@ -14,7 +14,6 @@
 .card-simple {
     background: var(--color-background-light);
     min-width: 10rem;
-    padding: 2rem;
     margin-block: 0.5rem;
     border-radius: 2rem;
     border: 0.2rem solid var(--color-border);

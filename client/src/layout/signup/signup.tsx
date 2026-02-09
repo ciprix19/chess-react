@@ -39,11 +39,11 @@ export default function SignUp() {
                         onChange={(e) => setters.setConfirmPassword(e.target.value)}
                     />
                     <button type='submit'>Sign Up</button>
+
+                    {state.info && <p>{state.info}</p>}
+
+                    <p>Already have an account?<Link to='/login'>Log in</Link></p>
                 </form>
-
-                {state.info && <p>{state.info}</p>}
-
-                <p>Already have an account?<Link to='/login'>Log in</Link></p>
             </HeaderCard>
         </main>
     );

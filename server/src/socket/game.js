@@ -65,6 +65,17 @@ function generateChessBoard() {
     return boardMatrix;
 }
 
+// function isKingInCheck(chessBoard, color) {
+//     const kingPos = findKing(chessBoard, color);
+//     const enemyColor = color === 'white' ? 'black' : 'white';
+
+//     const enemyAttacks = computeAttackSquares(boardSize, enemyColor);
+
+//     return enemyAttacks.some(
+//         sq => sq.row === king
+//     );
+// }
+
 function computePawnMoves(chessBoard, row, col, color) {
     const moves = [];
     const direction = color === 'white' ? -1 : 1;

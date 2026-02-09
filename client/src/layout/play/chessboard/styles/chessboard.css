@@ -1,5 +1,5 @@
 .chess-board {
-    padding: 2rem;
+    padding-inline: 2rem;
 }
 
 .position-wrapper {
@@ -89,7 +89,7 @@
 
 @media screen and (width > 720px) {
     .square {
-        width: 5rem;
+        width: 4rem;
     }
     .square .move-highlight {
         width: 1.2rem;

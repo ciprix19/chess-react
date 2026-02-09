@@ -31,11 +31,11 @@ export default function LogIn() {
                         onChange={(e) => setters.setPassword(e.target.value)}
                     />
                     <button type='submit'>Log In</button>
+
+                    {state.info && <p>{state.info}</p>}
+
+                    <label>Don't have an account yet? <Link to='/signup'>Sign up</Link></label>
                 </form>
-
-                {state.info && <p>{state.info}</p>}
-
-                <label>Don't have an account yet? <Link to='/signup'>Sign up</Link></label>
             </HeaderCard>
         </main>
     );
