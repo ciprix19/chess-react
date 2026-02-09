@@ -59,7 +59,7 @@ A real-time multiplayer chess application with authoritative server-side game lo
 - refresh tokens for session persistence (keep login session active for a set time)
 - socket connections are authenticated server-side (using auth middleware function in Express.js)
 
-## ♜ Game State Management
+## Game State Management
 
 Each match maintains a centralized state including:
 - Chess board matrix
