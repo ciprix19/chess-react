@@ -72,11 +72,11 @@ This ensures consistency and prevents invalid or malicious moves.
 
 ## Installation & Setup
 
-# install dependencies
+### install dependencies
 npm install
 
-# start backend
+### start backend
 npm run server
 
-# start frontend
+### start frontend
 npm run client
