@@ -1,31 +1,34 @@
 import type { User } from "./user"
 
+export type Color = 'white' | 'black';
+
 export type PieceType = {
     type: 'pawn' | 'knight' | 'bishop' | 'rook' | 'queen' | 'king';
-    color: 'white' | 'black';
-    id: number
+    color: Color;
+    value: number,
+    id: number;
 }
 
 export type SquareType = {
     squareId: number;
     row: number;
     col: number;
-    piece: PieceType
+    piece: PieceType;
 }
 
 export type CoordinateType = {
     row: number;
-    col: number
+    col: number;
 }
 
 export type MoveType = {
     from: CoordinateType;
-    to: CoordinateType
+    to: CoordinateType;
 }
 
 export type LegalMoves = {
     from: CoordinateType;
-    to: Array<CoordinateType>
+    to: Array<CoordinateType>;
 }
 
 export type GameStatusType = {
@@ -36,27 +39,34 @@ export type GameStatusType = {
 export type MatchType = {
     matchId: string;
     players: Array<User>;
-    playerBlackPieces: User;
-    playerWhitePieces: User;
+    playerBlack: User;
+    playerWhite: User;
     you: User;
     chessBoard: Array<Array<SquareType>>;
     legalMoves: Array<LegalMoves>;
+    captures: CapturesType;
     piecesColor: string;
     turn: string;
     gameStatus: GameStatusType;
+}
+
+
+export type CapturesType = {
+    [key in Color]: Array<PieceType>;
 }
 
 export type BoardUpdatedType = {
     matchId: string;
     chessBoard: Array<Array<SquareType>>;
     legalMoves: Array<LegalMoves>;
-    piecesColor: string;
+    captures: CapturesType;
+    piecesColor: Color;
     turn: string,
     gameStatus: GameStatusType;
 }
 
 export type CheckInfo = {
     inCheck: boolean;
-    checkedColor: 'white' | 'black' | null;
+    checkedColor: Color | null;
     kingPosition: CoordinateType | null;
 }

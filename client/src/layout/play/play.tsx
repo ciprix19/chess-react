@@ -2,9 +2,14 @@ import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../utils/context/authContext";
 import { socket } from "../../utils/socket-client/socket";
 import ChessBoard from "./chessboard/chessboard";
-import type { User } from "../../utils/interfaces/user";
+import type { User, UserPlayer } from "../../utils/interfaces/user";
 import './styles/play.css'
-import type { BoardUpdatedType, MatchType, SquareType } from "../../utils/interfaces/chess-types";
+import type { BoardUpdatedType, Color, MatchType, SquareType } from "../../utils/interfaces/chess-types";
+import captureSoundFile from '../../../public/sounds/capture.mp3'
+import moveSelfSoundFile from '../../../public/sounds/move-self.mp3'
+
+let captureSound = new Audio(captureSoundFile);
+let moveSelfSound = new Audio(moveSelfSoundFile);
 
 function ConnectionState({ isConnected, user } : { isConnected : boolean, user : User | undefined }) {
   return <p>Connection state: { user?.email + ' ' + isConnected }</p>;
@@ -15,14 +20,9 @@ export default function Play() {
     const [isConnected, setIsConnected] = useState(socket.connected);
     const [isFindingMatch, setIsFindingMatch] = useState(false);
     const [info, setInfo] = useState('idle');
-    const [enemyPlayer, setEnemyPlayer] = useState<User>();
-    const [currentPlayer, setCurrentPlayer] = useState<User>();
+    const [enemyPlayer, setEnemyPlayer] = useState<UserPlayer>();
+    const [currentPlayer, setCurrentPlayer] = useState<UserPlayer>();
     const [match, setMatch] = useState<MatchType>();
-
-    function handleFlipBoard(chessBoard : Array<Array<SquareType>>) {
-        //todo - flipping is a visual thing only -> no need to call backend for this
-        // return chessBoard.map(row => [...row].reverse()).reverse();
-    }
 
     const findMatch = () => {
         if (!authContext.authSession) {
@@ -49,18 +49,17 @@ export default function Play() {
         }
 
         function onGameReady(data: MatchType) {
-            // i need timer here... 3 seconds delay type thing
+            // todo: i need timer here... 3 seconds delay type thing
             try {
-                console.log(data);
                 const match : MatchType = {
                     matchId: data.matchId,
                     players: data.players,
-                    playerBlackPieces: data.playerBlackPieces,
-                    playerWhitePieces: data.playerWhitePieces,
+                    playerBlack: data.playerBlack,
+                    playerWhite: data.playerWhite,
                     you: data.you,
                     chessBoard: data.chessBoard,
-                    // chessBoard: data.chessBoard,
                     legalMoves: data.legalMoves,
+                    captures: data.captures,
                     piecesColor: data.piecesColor,
                     turn: data.turn,
                     gameStatus: data.gameStatus
@@ -68,8 +67,8 @@ export default function Play() {
 
                 setInfo('White moves');
                 setMatch(match);
-                setCurrentPlayer(data.players.find(p => p.email === data.you.email));
-                setEnemyPlayer(data.players.find(p => p.email !== data.you.email));
+                setCurrentPlayer({ user: data.players.find(p => p.email === data.you.email), score: 0, color: data.piecesColor });
+                setEnemyPlayer({ user: data.players.find(p => p.email !== data.you.email), score: 0, color: data.piecesColor === 'white' ? 'black' : 'white' });
             } catch (error) {
                 console.log(error);
             }
@@ -84,12 +83,38 @@ export default function Play() {
                         ...prev,
                         chessBoard: data.chessBoard,
                         legalMoves: data.legalMoves,
+                        captures: data.captures,
                         turn: data.turn,
                         gameStatus: data.gameStatus
                     };
                 });
 
                 setInfo(`${data.turn} moves`);
+                setCurrentPlayer(prev => {
+                    if (!prev) return prev;
+                    const currentScore = data.captures[prev.color as Color].reduce((sum, piece) => sum + piece.value, 0);
+                    return {
+                        ...prev,
+                        score: currentScore
+                    }
+                });
+                setEnemyPlayer(prev => {
+                    if (!prev) return prev;
+                    const currentScore = data.captures[prev.color as Color].reduce((sum, piece) => sum + piece.value, 0);
+                    return {
+                        ...prev,
+                        score: currentScore
+                    }
+                });
+
+                if (match !== undefined && (
+                    match.captures['white'].length < data.captures['white'].length ||
+                    match.captures['black'].length < data.captures['black'].length
+                )) {
+                    captureSound.play();
+                } else {
+                    moveSelfSound.play();
+                }
             } catch (error) {
                 console.log(error);
             }
@@ -106,22 +131,35 @@ export default function Play() {
             socket.off('game-ready', onGameReady);
             socket.off('board-updated', onBoardUpdated);
         }
-    }, [socket]);
+    }, [match]);
 
     return (
         <main className="play two-column-layout">
-            <div>
-                <div className='card-simple'>
-                    <h3>Player: {enemyPlayer?.email}</h3>
+            {match && enemyPlayer && currentPlayer &&
+                <div>
+                    <div className='card player-panel'>
+                        <p>{enemyPlayer?.score > 0 ? `+${enemyPlayer.score}` : ''}</p>
+                        <div className='captured-pieces'>
+                            {match.captures[enemyPlayer.color as Color].map(piece =>
+                                <img key={piece.id} src={`./images/pieces/${piece.type}-${piece.color}.svg`} alt='' />
+                            )}
+                        </div>
+                    </div>
+                    <h3>Player: {enemyPlayer.user?.email}</h3>
+                    <ChessBoard match={match}/>
+                    <div className='card player-panel'>
+                        <p>{currentPlayer?.score > 0 ? `+${currentPlayer.score}` : ''}</p>
+                        <div className='captured-pieces'>
+                            {match.captures[currentPlayer.color as Color].map(piece =>
+                                <img key={piece.id} src={`./images/pieces/${piece.type}-${piece.color}.svg`} alt='' />
+                            )}
+                        </div>
+                    </div>
+                    <h3>Player: {currentPlayer.user?.email}</h3>
                 </div>
-                {match && <ChessBoard match={match}/>}
-                <div className='card-simple'>
-                    <h3>Player: {currentPlayer?.email}</h3>
-                </div>
-            </div>
+            }
             <div>
                 {info && <h2>{info}</h2>}
-                <button>Flip board</button>
                 <button onClick={findMatch}>Find Match</button>
             </div>
         </main>

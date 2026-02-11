@@ -32,4 +32,6 @@ CHESS RULES
         * IN THIS CASE, CAPTURING BOTH PIECES AT THE SAME TIME IS INHERENTLY NOT POSSIBLE *
 6. promotion
     - a pawn advanced on the eight rank is promoted to any other piece (except king and pawn)
-
+7. discovery attacks
+    - a piece moves which causes a check on the enemy king but not with the piece that was moved
+    - when can it happen?

@@ -8,14 +8,22 @@ function createMatch(socket) {
         players: [ { id:socket.user.id, email: socket.user.email } ],
         sockets: [socket.id],
         chessBoard: null,
-        //todo: moveHistory
-        movesHistory: null,
-        playerWhitePieces: null,
-        playerBlackPieces: null,
+        //todo: moveHistory,
+        playerWhite: null,
+        playerBlack: null,
         turn: 'white',
+        captures: {
+            white: [],
+            black: []
+        },
+        checkInfo: {
+            inCheck: false,
+            checkedColor: null, // | 'white' | 'black'
+            kingPosition: null // | CoordinateType { row: number, col: number }
+        },
         gameStatus: {
-            state: 'playing',
-            winner: null
+            state: 'playing', // | 'check' | 'checkmate' | 'stalemate'
+            winner: null, // | 'white' | 'black'
         }
     }
     waitingQueue.push(match);

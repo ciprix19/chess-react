@@ -1,5 +1,7 @@
 .chess-board {
     padding-inline: 2rem;
+    max-width: 20rem;
+    margin: 0 auto;
 }
 
 .position-wrapper {
@@ -88,6 +90,9 @@
 }
 
 @media screen and (width > 720px) {
+    .chess-board {
+        max-width: 36rem;
+    }
     .square {
         width: 4rem;
     }
