@@ -81,11 +81,22 @@ export default function ChessBoard({ match } : { match: MatchType }) {
 
     function handleSquareClick(row: number, col: number) {
         // if no selection
-        if (!selectedSquare) {
-            setSelectedSquare({ row, col });
-            const moves = getMovesForSquare(row, col);
-            if (moves !== null) {
-                setHighlightedMoves(moves);
+        if (
+            !selectedSquare || // or there is a selection but i click one of my pieces...
+            (
+                selectedSquare &&
+                match.chessBoard[row][col].piece &&
+                match.chessBoard[row][col].piece.color === match.chessBoard[selectedSquare.row][selectedSquare.col].piece.color
+            )
+        ) {
+            console.log(match.chessBoard[row][col]);
+            if (match.chessBoard[row][col].piece !== null) {
+                const moves = getMovesForSquare(row, col);
+                setSelectedSquare({ row, col });
+                setHighlightedMoves(null);
+                if (moves !== null) {
+                    setHighlightedMoves(moves);
+                }
             }
             return;
         }
