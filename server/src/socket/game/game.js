@@ -1,7 +1,14 @@
 const config = require('./config/gameConfig.json');
 const boardSize = config.boardSize;
-const { computePawnMoves, computeBishopMoves, computeKnightMoves, computeKingMoves, computeQueenMoves, computeRookMoves } = require('./legalmoves');
-const { getAttackersOfSquare } = require('./attackersquares');
+const {
+    isKingInCheck,
+    computePawnMoves,
+    computeBishopMoves,
+    computeKnightMoves,
+    computeKingMoves,
+    computeQueenMoves,
+    computeRookMoves
+} = require('./legalmoves');
 
 function validateMove(chessBoard, turn, piecesColor, from, to) {
     if (turn !== piecesColor) return false;
@@ -57,11 +64,17 @@ function applyMove(chessBoard, from, to) {
     const capturedPiece = chessBoard[to.row][to.col].piece;
 
     const originalType = pieceToMove.type;
+    const originalDidMove = pieceToMove.didMove;
 
     chessBoard[to.row][to.col].piece = pieceToMove;
     chessBoard[from.row][from.col].piece = null;
 
+    pieceToMove.didMove = true;
+
     let promotion = false;
+    let castled = false;
+    let rookInfo = null;
+
     if (
         pieceToMove.type === 'pawn' && (
             (pieceToMove.color === 'white' && to.row === 0) ||
@@ -71,6 +84,33 @@ function applyMove(chessBoard, from, to) {
         pieceToMove.type = 'queen';
         promotion = true;
     }
+    if (pieceToMove.type === 'king' && Math.abs(to.col - from.col) === 2) {
+        castled = true;
+        if (to.col === 6) {
+            const rook = chessBoard[from.row][7].piece;
+            rookInfo = {
+                rook,
+                originalDidMove: rook.didMove,
+                fromCol: 7,
+                toCol: 5
+            };
+            chessBoard[from.row][5].piece = rook;
+            chessBoard[from.row][7].piece = null;
+            rook.didMove = true;
+        }
+        if (to.col === 2) {
+            const rook = chessBoard[from.row][0].piece;
+            rookInfo = {
+                rook,
+                originalDidMove: rook.didMove,
+                fromCol: 0,
+                toCol: 3
+            };
+            chessBoard[from.row][3].piece = rook;
+            chessBoard[from.row][0].piece = null;
+            rook.didMove = true;
+        }
+    }
 
     return {
         from,
@@ -78,39 +118,30 @@ function applyMove(chessBoard, from, to) {
         movedPiece: pieceToMove,
         capturedPiece: capturedPiece,
         originalType,
-        promotion
+        originalDidMove,
+        promotion,
+        castled,
+        rookInfo,
     }
 }
 
 function undoMove(chessBoard, moveInfo) {
-    const { from, to, movedPiece, capturedPiece, originalType, promotion } = moveInfo;
+    const { from, to, movedPiece, capturedPiece, originalType, originalDidMove, promotion, castled, rookInfo } = moveInfo;
 
     if (promotion) {
         movedPiece.type = originalType;
     }
 
+    if (castled && rookInfo) {
+        chessBoard[from.row][rookInfo.fromCol].piece = rookInfo.rook;
+        chessBoard[from.row][rookInfo.toCol].piece = null;
+        rookInfo.rook.didMove = rookInfo.originalDidMove;
+    }
+
+    movedPiece.didMove = originalDidMove;
+
     chessBoard[from.row][from.col].piece = movedPiece;
     chessBoard[to.row][to.col].piece = capturedPiece;
-}
-
-function getKingPosition(chessBoard, piecesColor) {
-    for (let row = 0; row < boardSize; row++) {
-        for (let col = 0; col < boardSize; col++) {
-            if (chessBoard[row][col].piece && chessBoard[row][col].piece.type === 'king' && chessBoard[row][col].piece.color === piecesColor) {
-                return { row, col };
-            }
-        }
-    }
-    return null;
-}
-
-function isKingInCheck(chessBoard, piecesColor) {
-    const kingPosition = getKingPosition(chessBoard, piecesColor);
-
-    const enemyColor = piecesColor === 'white' ? 'black' : 'white';
-    const attackers = getAttackersOfSquare(chessBoard, enemyColor, kingPosition);
-
-    return attackers.length > 0;
 }
 
 // compute legal moves for a color side
@@ -182,7 +213,5 @@ module.exports = {
     validateMove,
     applyMove,
     undoMove,
-    getKingPosition,
     setCapturedPiece,
-    isKingInCheck,
 }

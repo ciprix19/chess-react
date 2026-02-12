@@ -18,7 +18,7 @@ CHESS RULES
             * WARNING THERE CAN BE MORE THAN ONE PIECE THAT ATTACKS THE KING (DISCOVERED ATTACKS) *
             * IN THIS CASE, CAPTURING BOTH PIECES AT THE SAME TIME IS INHERENTLY NOT POSSIBLEPOSSIBLE *
         - cannot castle!!!
-4. castling -> use a 'didMove' variable which is set to false initially and true if the piece is moved, not allowing castling
+4. castling !
     - king and rook did not move at all
     - there should be not pieces between the king and the rook
     - the squares that the king travel can be attacked (be on check)
@@ -30,7 +30,7 @@ CHESS RULES
     - cannot capture the enemy piece
         * WARNING THERE CAN BE MORE THAN ONE PIECE THAT ATTACKS THE KING (DISCOVERED ATTACKS) *
         * IN THIS CASE, CAPTURING BOTH PIECES AT THE SAME TIME IS INHERENTLY NOT POSSIBLE *
-6. promotion !
+6. promotion done half - can promote every piece not only queen
     - a pawn advanced on the eight rank is promoted to any other piece (except king and pawn)
 7. discovered attacks !
     - a piece moves which causes a check on the enemy king but not with the piece that was moved

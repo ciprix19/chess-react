@@ -1,5 +1,29 @@
 const config = require('./config/gameConfig.json');
 const boardSize = config.boardSize;
+const { getAttackersOfSquare } = require('./attackersquares');
+
+function getPiecesPosition(chessBoard, pieceType, piecesColor) {
+    let pieces = [];
+    for (let row = 0; row < boardSize; row++) {
+        for (let col = 0; col < boardSize; col++) {
+            if (chessBoard[row][col].piece && chessBoard[row][col].piece.type === pieceType && chessBoard[row][col].piece.color === piecesColor) {
+                pieces.push({ row, col });
+            }
+        }
+    }
+    return pieces;
+}
+
+function isKingInCheck(chessBoard, piecesColor) {
+    const positionsArray = getPiecesPosition(chessBoard, 'king', piecesColor);
+    let kingPosition = null;
+    if (positionsArray.length === 1) {
+        kingPosition = positionsArray[0];
+    }
+    const enemyColor = piecesColor === 'white' ? 'black' : 'white';
+    const attackers = getAttackersOfSquare(chessBoard, enemyColor, kingPosition);
+    return attackers.length > 0;
+}
 
 function computePawnMoves(chessBoard, row, col, color) {
     const moves = [];
@@ -78,6 +102,39 @@ function computeKingMoves(chessBoard, row, col, color) {
             moves.push({ row: newRow, col: newCol });
         }
     }
+
+    if (chessBoard[row][col].piece.didMove || isKingInCheck(chessBoard, color)) return moves;
+
+    // king side castle
+    if (
+        chessBoard[row][7].piece && chessBoard[row][7].piece.type === 'rook' &&
+        chessBoard[row][7].piece.color === color && chessBoard[row][7].piece.didMove === false
+    ) {
+        if (chessBoard[row][5].piece === null && chessBoard[row][6].piece === null) {
+            if (
+                getAttackersOfSquare(chessBoard, color === 'white' ? 'black' : 'white', { row, col: 5 }).length === 0 &&
+                getAttackersOfSquare(chessBoard, color === 'white' ? 'black' : 'white', { row, col: 6 }).length === 0
+            ) {
+                moves.push({ row, col: 6 });
+            }
+        }
+    }
+
+    // queen side castle
+    if (
+        chessBoard[row][0].piece && chessBoard[row][0].piece.type === 'rook' &&
+        chessBoard[row][7].piece.color === color && chessBoard[row][0].piece.didMove === false
+    ) {
+        if (chessBoard[row][1].piece === null && chessBoard[row][2].piece === null && chessBoard[row][3].piece === null) {
+            if (
+                getAttackersOfSquare(chessBoard, color === 'white' ? 'black' : 'white', { row, col: 2 }).length === 0 &&
+                getAttackersOfSquare(chessBoard, color === 'white' ? 'black' : 'white', { row, col: 3 }).length === 0
+            ) {
+                moves.push({ row, col: 2 });
+            }
+        }
+    }
+
     return moves;
 }
 
@@ -123,12 +180,9 @@ function computeQueenMoves(chessBoard, row, col, color) {
     return moves;
 }
 
-//todo maybe i need a isSquareAttacked function? and use this also for the computeAttackSquares?
-function computeLegalMovesInCheck(chessBoard, enemyAttacks, myKingPosition, myColor) {
-
-}
-
 module.exports = {
+    isKingInCheck,
+    getPiecesPosition,
     computePawnMoves,
     computeBishopMoves,
     computeKingMoves,

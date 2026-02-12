@@ -1,17 +1,17 @@
 const config = require('./config/gameConfig.json');
 const boardSize = config.boardSize;
 
-function isPawnAttackingKing(row, col, color, position) {
+function isPawnAttackingSquare(row, col, color, square) {
     const direction = color === 'white' ? -1 : 1;
     return (
-        (row + direction === position.row && col - 1 === position.col) ||
-        (row + direction === position.row && col + 1 === position.col)
+        (row + direction === square.row && col - 1 === square.col) ||
+        (row + direction === square.row && col + 1 === square.col)
     )
 }
 
-function isKnightAttackingKing(row, col, position) {
-    const rowDiff = Math.abs(row - position.row);
-    const colDiff = Math.abs(col - position.col);
+function isKnightAttackingSquare(row, col, square) {
+    const rowDiff = Math.abs(row - square.row);
+    const colDiff = Math.abs(col - square.col);
 
     return (
         (rowDiff === 2 && colDiff === 1) ||
@@ -19,20 +19,20 @@ function isKnightAttackingKing(row, col, position) {
     );
 }
 
-function isKingAttackingSquare(row, col, position) {
+function isKingAttackingSquare(row, col, square) {
     return (
-        Math.abs(row - position.row) <= 1 &&
-        Math.abs(col - position.col) <= 1 &&
-        !(row === position.row && col === position.col)
+        Math.abs(row - square.row) <= 1 &&
+        Math.abs(col - square.col) <= 1 &&
+        !(row === square.row && col === square.col)
     );
 }
 
-function rayAttacksKing(chessBoard, row, col, xDirection, yDirection, position) {
+function rayAttacksSquare(chessBoard, row, col, xDirection, yDirection, square) {
     for (let i = 0; i < xDirection.length; i++) {
         let newRow = row + xDirection[i];
         let newCol = col + yDirection[i];
         while(chessBoard[newRow] && chessBoard[newRow][newCol]) {
-            if (newRow === position.row && newCol === position.col) {
+            if (newRow === square.row && newCol === square.col) {
                 return true;
             }
             if (chessBoard[newRow][newCol].piece !== null) break;
@@ -43,45 +43,46 @@ function rayAttacksKing(chessBoard, row, col, xDirection, yDirection, position) 
     return false;
 }
 
-function isBishopAttackingKing(chessBoard, row, col, position) {
+function isBishopAttackingSquare(chessBoard, row, col, square) {
     const xDirection = [1,  1, -1, -1];
     const yDirection = [1, -1, -1,  1];
-    return rayAttacksKing(chessBoard, row, col, xDirection, yDirection, position);
+    return rayAttacksSquare(chessBoard, row, col, xDirection, yDirection, square);
 }
 
-function isRookAttackingKing(chessBoard, row, col, position) {
+function isRookAttackingSquare(chessBoard, row, col, square) {
     const xDirection = [0, 1,  0, -1];
     const yDirection = [1, 0, -1,  0];
-    return rayAttacksKing(chessBoard, row, col, xDirection, yDirection, position);
+    return rayAttacksSquare(chessBoard, row, col, xDirection, yDirection, square);
 }
 
-function isQueenAttackingKing(chessBoard, row, col, position) {
+function isQueenAttackingSquare(chessBoard, row, col, square) {
     const xDirection = [0, 1,  0, -1, 1,  1, -1, -1];
     const yDirection = [1, 0, -1,  0, 1, -1, -1,  1];
-    return rayAttacksKing(chessBoard, row, col, xDirection, yDirection, position);
+    return rayAttacksSquare(chessBoard, row, col, xDirection, yDirection, square);
 }
 
-function getAttackersOfSquare(chessBoard, piecesColor, position) {
+// get the attackers with the color 'piecesColor' that attack the square with the coordinates square.row and square.col
+function getAttackersOfSquare(chessBoard, piecesColor, square) {
     const attackerSquares = [];
     for (let row = 0; row < boardSize; row++) {
         for (let col = 0; col < boardSize; col++) {
             if (chessBoard[row][col].piece && chessBoard[row][col].piece.color === piecesColor) {
-                if (chessBoard[row][col].piece.type === 'pawn' && isPawnAttackingKing(row, col, piecesColor, position)) {
+                if (chessBoard[row][col].piece.type === 'pawn' && isPawnAttackingSquare(row, col, piecesColor, square)) {
                     attackerSquares.push({ row, col });
                 }
-                if (chessBoard[row][col].piece.type === 'knight' && isKnightAttackingKing(row, col, position)) {
+                if (chessBoard[row][col].piece.type === 'knight' && isKnightAttackingSquare(row, col, square)) {
                     attackerSquares.push({ row, col });
                 }
-                if (chessBoard[row][col].piece.type === 'king' && isKingAttackingSquare(row, col, position)) {
+                if (chessBoard[row][col].piece.type === 'king' && isKingAttackingSquare(row, col, square)) {
                     attackerSquares.push({ row, col });
                 }
-                if (chessBoard[row][col].piece.type === 'bishop' && isBishopAttackingKing(chessBoard, row, col, position)) {
+                if (chessBoard[row][col].piece.type === 'bishop' && isBishopAttackingSquare(chessBoard, row, col, square)) {
                     attackerSquares.push({ row, col });
                 }
-                if (chessBoard[row][col].piece.type === 'rook' && isRookAttackingKing(chessBoard, row, col, position)) {
+                if (chessBoard[row][col].piece.type === 'rook' && isRookAttackingSquare(chessBoard, row, col, square)) {
                     attackerSquares.push({ row, col });
                 }
-                if (chessBoard[row][col].piece.type === 'queen' && isQueenAttackingKing(chessBoard, row, col, position)) {
+                if (chessBoard[row][col].piece.type === 'queen' && isQueenAttackingSquare(chessBoard, row, col, square)) {
                     attackerSquares.push({ row, col });
                 }
             }

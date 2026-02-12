@@ -1,6 +1,7 @@
 const { findMatch, removeMatchFromQueue, getMatchById, getAllMatches } = require('./matchmaking');
 const { generateChessBoard } = require('./game/generateChessBoard');
-const { validateMove, applyMove, setCapturedPiece, computeLegalMoves, isKingInCheck } = require('./game/game');
+const { validateMove, applyMove, setCapturedPiece, computeLegalMoves } = require('./game/game');
+const { isKingInCheck } = require('./game/legalmoves');
 const socketAuth = require('./auth')
 
 function initSocket(io) {
