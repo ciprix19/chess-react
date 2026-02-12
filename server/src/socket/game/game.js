@@ -56,19 +56,38 @@ function applyMove(chessBoard, from, to) {
     const pieceToMove = chessBoard[from.row][from.col].piece;
     const capturedPiece = chessBoard[to.row][to.col].piece;
 
+    const originalType = pieceToMove.type;
+
     chessBoard[to.row][to.col].piece = pieceToMove;
     chessBoard[from.row][from.col].piece = null;
+
+    let promotion = false;
+    if (
+        pieceToMove.type === 'pawn' && (
+            (pieceToMove.color === 'white' && to.row === 0) ||
+            (pieceToMove.color === 'black' && to.row === 7)
+        )
+    ) {
+        pieceToMove.type = 'queen';
+        promotion = true;
+    }
 
     return {
         from,
         to,
         movedPiece: pieceToMove,
-        capturedPiece: capturedPiece
+        capturedPiece: capturedPiece,
+        originalType,
+        promotion
     }
 }
 
 function undoMove(chessBoard, moveInfo) {
-    const { from, to, movedPiece, capturedPiece } = moveInfo;
+    const { from, to, movedPiece, capturedPiece, originalType, promotion } = moveInfo;
+
+    if (promotion) {
+        movedPiece.type = originalType;
+    }
 
     chessBoard[from.row][from.col].piece = movedPiece;
     chessBoard[to.row][to.col].piece = capturedPiece;
