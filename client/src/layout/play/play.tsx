@@ -4,12 +4,18 @@ import { socket } from "../../utils/socket-client/socket";
 import ChessBoard from "./chessboard/chessboard";
 import type { User, UserPlayer } from "../../utils/interfaces/user";
 import './styles/play.css'
-import type { BoardUpdatedType, Color, MatchType, SquareType } from "../../utils/interfaces/chess-types";
-import captureSoundFile from '../../../public/sounds/capture.mp3'
-import moveSelfSoundFile from '../../../public/sounds/move-self.mp3'
+import type { BoardUpdatedType, Color, GameOverType, MatchType, SquareType } from "../../utils/interfaces/chess-types";
+import { captureSound, castleSound, gameStartSound, gameEndSound, moveCheckSound, moveSelfSound, promoteSound } from '../play/audio/audioVariables'
 
-let captureSound = new Audio(captureSoundFile);
-let moveSelfSound = new Audio(moveSelfSoundFile);
+let audioVariables = {
+    captureSound,
+    castleSound,
+    gameStartSound,
+    gameEndSound,
+    moveCheckSound,
+    moveSelfSound,
+    promoteSound
+};
 
 function ConnectionState({ isConnected, user } : { isConnected : boolean, user : User | undefined }) {
   return <p>Connection state: { user?.email + ' ' + isConnected }</p>;
@@ -64,7 +70,7 @@ export default function Play() {
                     turn: data.turn,
                     gameStatus: data.gameStatus
                 }
-
+                console.log(data);
                 setInfo('White moves');
                 setMatch(match);
                 setCurrentPlayer({ user: data.players.find(p => p.email === data.you.email), score: 0, color: data.piecesColor });
@@ -107,13 +113,29 @@ export default function Play() {
                     }
                 });
 
-                if (match !== undefined && (
-                    match.captures['white'].length < data.captures['white'].length ||
-                    match.captures['black'].length < data.captures['black'].length
-                )) {
-                    captureSound.play();
-                } else {
-                    moveSelfSound.play();
+                switch (data.gameStatus.state) {
+                    case 'playing':
+                        if (match !== undefined && (
+                            match.captures['white'].length < data.captures['white'].length ||
+                            match.captures['black'].length < data.captures['black'].length
+                        )) {
+                            audioVariables.captureSound.play();
+                        } else {
+                            audioVariables.moveSelfSound.play();
+                        }
+                        break;
+                    case 'check':
+                        audioVariables.moveCheckSound.play();
+                        break;
+                    case 'checkmate':
+                        setInfo(data.gameStatus.winner?.email + ' won');
+                        audioVariables.gameEndSound.play();
+                        break;
+                    case 'stalemate':
+                        setInfo(data.gameStatus.state);
+                        // need smth different here
+                        audioVariables.gameEndSound.play();
+                        break;
                 }
             } catch (error) {
                 console.log(error);

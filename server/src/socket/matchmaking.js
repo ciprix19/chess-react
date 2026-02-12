@@ -16,14 +16,9 @@ function createMatch(socket) {
             white: [],
             black: []
         },
-        checkInfo: {
-            inCheck: false,
-            checkedColor: null, // | 'white' | 'black'
-            kingPosition: null // | CoordinateType { row: number, col: number }
-        },
         gameStatus: {
             state: 'playing', // | 'check' | 'checkmate' | 'stalemate'
-            winner: null, // | 'white' | 'black'
+            winner: null, // | User
         }
     }
     waitingQueue.push(match);

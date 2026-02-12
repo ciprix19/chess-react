@@ -1,7 +1,6 @@
 const { findMatch, removeMatchFromQueue, getMatchById, getAllMatches } = require('./matchmaking');
-const { computeLegalMoves } = require('./game/legalmoves');
 const { generateChessBoard } = require('./game/generateChessBoard');
-const { validateMove, applyMove, setCapturedPiece, getCheckInfo } = require('./game/game');
+const { validateMove, applyMove, setCapturedPiece, computeLegalMoves, isKingInCheck } = require('./game/game');
 const socketAuth = require('./auth')
 
 function initSocket(io) {
@@ -81,22 +80,36 @@ function initSocket(io) {
 
             const isValid = validateMove(match.chessBoard, match.turn, playerColor, data.from, data.to);
             if (!isValid) return;
+
             setCapturedPiece(match.captures, data.to, playerColor);
-            // for (let i = 0; i < 20; i++) {
-            //     match.captures['white'].push({ type: 'pawn', color: 'black', value: 1 });
-            // }
-            match.chessBoard = applyMove(match.chessBoard, data.from, data.to);
+            applyMove(match.chessBoard, data.from, data.to);
             match.turn = match.turn === 'white' ? 'black' : 'white';
 
-            // check info for the chessboard and match.turn would be the enemy color
-            // i say go find out if my move checks your king
-            // i want to find out:
-            /*
-                1. am i in check?
-                2. if yes, i want to know who attacks the king (the squares that attack and the square which is attacked (king))
-            */
-            // const checkInfo = getCheckInfo(match.chessBoard, playerColor, match.turn);
-
+            const enemyLegalMoves = computeLegalMoves(match.chessBoard, match.turn);
+            const isKingChecked = isKingInCheck(match.chessBoard, match.turn);
+            // checking if i need to update gameStatus
+            // handle the game over situations here
+            if (enemyLegalMoves.length === 0) {
+                // game is over
+                if (isKingInCheck(match.chessBoard, match.turn)) {
+                    match.gameStatus = {
+                        state: 'checkmate',
+                        winner: socket.user
+                    }
+                } else { // king not checked then stalemate
+                    match.gameStatus = {
+                        state: 'stalemate'
+                    }
+                }
+            } else if (isKingChecked) { // and handle the check situations here... needed for playing check sound on frontend for current implementation
+                match.gameStatus = {
+                    state: 'check'
+                }
+            } else {
+                match.gameStatus = {
+                    state: 'playing'
+                }
+            }
             match.sockets.forEach(socketId => {
                 const s = io.sockets.sockets.get(socketId);
                 if (!s) return;

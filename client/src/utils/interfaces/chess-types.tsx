@@ -33,7 +33,7 @@ export type LegalMoves = {
 
 export type GameStatusType = {
     state: 'playing' | 'check' | 'checkmate' | 'stalemate';
-    winner: 'User' | null;
+    winner: User | null;
 }
 
 export type MatchType = {
@@ -65,8 +65,7 @@ export type BoardUpdatedType = {
     gameStatus: GameStatusType;
 }
 
-export type CheckInfo = {
-    inCheck: boolean;
-    checkedColor: Color | null;
-    kingPosition: CoordinateType | null;
+export type GameOverType = {
+    matchId: string;
+    gameStatus: GameStatusType;
 }

@@ -12,7 +12,7 @@ function Piece({ piece } : { piece: PieceType }) {
         <div className='piece'
              onClick={() => {console.log(piece.id)}}
              >
-            <img src={`./images/pieces/${piece.type}-${piece.color}.svg`} alt='' />
+            <img src={`./images/piecesv2/${piece.type}-${piece.color}.svg`} alt='' />
         </div>
     );
 }
@@ -82,9 +82,9 @@ export default function ChessBoard({ match } : { match: MatchType }) {
     function handleSquareClick(row: number, col: number) {
         // if no selection
         if (!selectedSquare) {
+            setSelectedSquare({ row, col });
             const moves = getMovesForSquare(row, col);
             if (moves !== null) {
-                setSelectedSquare({ row, col });
                 setHighlightedMoves(moves);
             }
             return;

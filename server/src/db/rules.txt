@@ -1,7 +1,7 @@
 
 CHESS RULES
 
-1. pins
+1. pins !
     - bishops, rooks, queens can pin
     - the pinned piece cannot move
 2. en-passant
@@ -32,6 +32,6 @@ CHESS RULES
         * IN THIS CASE, CAPTURING BOTH PIECES AT THE SAME TIME IS INHERENTLY NOT POSSIBLE *
 6. promotion
     - a pawn advanced on the eight rank is promoted to any other piece (except king and pawn)
-7. discovery attacks
+7. discovered attacks
     - a piece moves which causes a check on the enemy king but not with the piece that was moved
     - when can it happen?

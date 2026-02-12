@@ -1,7 +1,7 @@
 .chess-board {
     padding-inline: 2rem;
-    max-width: 20rem;
     margin: 0 auto;
+    max-width: 36rem;
 }
 
 .position-wrapper {
@@ -43,7 +43,6 @@
 }
 
 .square {
-    width: 2rem;
     aspect-ratio: 1/1;
     display: flex;
     justify-content: center;
@@ -85,17 +84,12 @@
 .square .capture-highlight {
     background-color: var(--color-selected);
 }
+
 .square img {
-    padding: 0.5rem;
+    width: 4rem;
 }
 
 @media screen and (width > 720px) {
-    .chess-board {
-        max-width: 36rem;
-    }
-    .square {
-        width: 4rem;
-    }
     .square .move-highlight {
         width: 1.2rem;
         height: 1.2rem;
