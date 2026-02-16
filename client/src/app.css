@@ -19,7 +19,6 @@
     border: 0.2rem solid var(--color-border);
 }
 
-
 @media screen and (width > 1080px) {
     .two-column-layout {
         display: grid;

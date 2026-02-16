@@ -12,6 +12,11 @@ function createMatch(socket) {
         playerWhite: null,
         playerBlack: null,
         turn: 'white',
+        time: {
+            remainingWhite: null,
+            remainingBlack: null,
+            lastMoveTimeStamp: null
+        },
         captures: {
             white: [],
             black: []

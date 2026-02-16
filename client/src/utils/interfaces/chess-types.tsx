@@ -82,3 +82,4 @@ export type GamePhase =
     | 'playing'
     | 'check'
     | 'gameover'
+    | 'waiting-for-rematch'

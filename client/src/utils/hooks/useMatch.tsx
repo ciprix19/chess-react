@@ -17,7 +17,7 @@ export function useMatch() {
         return color === 'white' ? 'black' : 'white';
     }
 
-    const findMatch = () => {
+    const handleFindMatch = () => {
         if (!authContext.authSession) {
             setInfo('Please login');
             return;
@@ -30,6 +30,29 @@ export function useMatch() {
             setGamePhase('finding');
             setInfo('Finding Match...');
         }
+    }
+
+    //todo: handle rematch
+    const handleRematch = () => {
+        if (!authContext.authSession) {
+            setInfo('Please login');
+            return;
+        }
+
+        if (gamePhase === 'gameover') {
+            socket.auth.token = authContext.authSession.accessToken;
+            socket.emit('rematch');
+            setGamePhase('waiting-for-rematch');
+            setInfo('Waiting for rematch...')
+        }
+    }
+
+    const handleDraw = () => {
+
+    }
+
+    const handleResign = () => {
+
     }
 
     useEffect(() => {
@@ -141,6 +164,9 @@ export function useMatch() {
         enemyPlayer,
         gamePhase,
         info,
-        findMatch
+        handleFindMatch,
+        handleRematch,
+        handleDraw,
+        handleResign
     };
 }
