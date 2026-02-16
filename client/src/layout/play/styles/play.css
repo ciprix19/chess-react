@@ -16,7 +16,6 @@
 }
 .play .captured-pieces img {
     max-width: 1rem;
-    margin: 0;
 }
 
 .play > div {

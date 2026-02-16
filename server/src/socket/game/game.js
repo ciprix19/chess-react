@@ -148,7 +148,6 @@ function undoMove(chessBoard, moveInfo) {
 function computeLegalMoves(chessBoard, piecesColor) {
     let legalMoves = [];
 
-    // todo: handle chess rules (check src/db/rules.txt)
     for (let row = 0; row < boardSize; row++) {
         for (let col = 0; col < boardSize; col++) {
             if (chessBoard[row][col].piece && chessBoard[row][col].piece.color === piecesColor) {

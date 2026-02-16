@@ -8,6 +8,16 @@ function initSocket(io) {
 
     io.use(socketAuth);
 
+    //todo
+    /*
+        handle stalemate
+            - if only kings remain on board
+            - if only kings and one minor piece on board (can be max total 4 pieces - king and minor piece for both players - still draw)
+        - en passant (move histoy)
+        - handle socket reconnect (advanced)
+        - add timer
+        - resign button and draw offer
+    */
     io.on('connection', (socket) => {
         console.log(`User connected: ${socket.id}`);
 

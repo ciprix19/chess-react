@@ -1,31 +1,39 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { AuthContext } from "../../utils/context/authContext";
 import { socket } from "../../utils/socket-client/socket";
 import ChessBoard from "./chessboard/chessboard";
-import type { User, UserPlayer } from "../../utils/interfaces/user";
+import type { User } from "../../utils/interfaces/user";
 import './styles/play.css'
-import type { BoardUpdatedType, Color, GameOverType, MatchType, SquareType } from "../../utils/interfaces/chess-types";
-import { captureSound, castleSound, gameStartSound, gameEndSound, moveCheckSound, moveSelfSound, promoteSound } from '../play/audio/audioVariables'
-
-let audioVariables = {
-    captureSound,
-    castleSound,
-    gameStartSound,
-    gameEndSound,
-    moveCheckSound,
-    moveSelfSound,
-    promoteSound
-};
+import type { UserPlayer, GamePhase, BoardUpdatedType, CapturesType, Color, MatchType } from "../../utils/interfaces/chess-types";
+import { useGameAudio } from "../../utils/hooks/useGameAudio";
 
 function ConnectionState({ isConnected, user } : { isConnected : boolean, user : User | undefined }) {
   return <p>Connection state: { user?.email + ' ' + isConnected }</p>;
 }
 
+function PlayerPanel({ player, captures } : { player: UserPlayer, captures: CapturesType }) {
+    const sortedCaptures = useMemo(() => {
+        return [...captures[player.color]].sort((piece1, piece2) => piece1.value - piece2.value);
+    }, [captures, player.color]);
+
+    return (
+        <div className='card player-panel'>
+            <p>{player?.score > 0 ? `+${player.score}` : ''}</p>
+            <div className='captured-pieces'>
+                {sortedCaptures.map(piece =>
+                    <img key={piece.id} src={`./images/piecesv2/${piece.type}-${piece.color}.svg`} alt='' />
+                )}
+            </div>
+        </div>
+    );
+}
+
 export default function Play() {
     const authContext = useContext(AuthContext);
+    const audio = useGameAudio();
     const [isConnected, setIsConnected] = useState(socket.connected);
-    const [isFindingMatch, setIsFindingMatch] = useState(false);
-    const [info, setInfo] = useState('idle');
+    const [gamePhase, setGamePhase] = useState<GamePhase>('idle');
+    const [info, setInfo] = useState('');
     const [enemyPlayer, setEnemyPlayer] = useState<UserPlayer>();
     const [currentPlayer, setCurrentPlayer] = useState<UserPlayer>();
     const [match, setMatch] = useState<MatchType>();
@@ -36,13 +44,17 @@ export default function Play() {
             return;
         }
 
-        if (!isFindingMatch) {
+        if (gamePhase !== 'finding') {
             socket.auth.token = authContext.authSession.accessToken;
             socket.connect();
             socket.emit('find-match');
-            setIsFindingMatch(true);
+            setGamePhase('finding');
             setInfo('Finding Match...');
         }
+    }
+
+    function getOpponentColor(color: Color) : Color {
+        return color === 'white' ? 'black' : 'white';
     }
 
     useEffect(() => {
@@ -72,9 +84,10 @@ export default function Play() {
                 }
                 console.log(data);
                 setInfo('White moves');
+                setGamePhase('playing');
                 setMatch(match);
                 setCurrentPlayer({ user: data.players.find(p => p.email === data.you.email), score: 0, color: data.piecesColor });
-                setEnemyPlayer({ user: data.players.find(p => p.email !== data.you.email), score: 0, color: data.piecesColor === 'white' ? 'black' : 'white' });
+                setEnemyPlayer({ user: data.players.find(p => p.email !== data.you.email), score: 0, color: getOpponentColor(data.piecesColor) });
             } catch (error) {
                 console.log(error);
             }
@@ -115,26 +128,35 @@ export default function Play() {
 
                 switch (data.gameStatus.state) {
                     case 'playing':
-                        if (match !== undefined && (
-                            match.captures['white'].length < data.captures['white'].length ||
-                            match.captures['black'].length < data.captures['black'].length
-                        )) {
-                            audioVariables.captureSound.play();
-                        } else {
-                            audioVariables.moveSelfSound.play();
-                        }
+                        // i should not use 'match' in the dependency array for sockets
+                        // since sounds are only a client thing, not crucial for the server, i think that i need to implement move history
+                        // in backend and send the whole history to the frontend, the client should then be able to view previous moves
+                        // and i can handle sounds based on history
+                        // if (match !== undefined && (
+                        //     match.captures['white'].length < data.captures['white'].length ||
+                        //     match.captures['black'].length < data.captures['black'].length
+                        // )) {
+                        //     audioVariables.captureSound.play();
+                        // } else {
+                        //     audioVariables.moveSelfSound.play();
+                        // }
+                        setGamePhase('playing');
+                        audio.playMove();
                         break;
                     case 'check':
-                        audioVariables.moveCheckSound.play();
+                        setGamePhase('check');
+                        audio.playCheck();
                         break;
                     case 'checkmate':
                         setInfo(data.gameStatus.winner?.email + ' won');
-                        audioVariables.gameEndSound.play();
+                        audio.playGameEnd();
+                        setGamePhase('gameover');
                         break;
                     case 'stalemate':
                         setInfo(data.gameStatus.state);
                         // need smth different here
-                        audioVariables.gameEndSound.play();
+                        audio.playGameEnd();
+                        setGamePhase('gameover');
                         break;
                 }
             } catch (error) {
@@ -153,36 +175,22 @@ export default function Play() {
             socket.off('game-ready', onGameReady);
             socket.off('board-updated', onBoardUpdated);
         }
-    }, [match]);
+    }, []);
 
     return (
         <main className="play two-column-layout">
             {match && enemyPlayer && currentPlayer &&
                 <div>
-                    <div className='card player-panel'>
-                        <p>{enemyPlayer?.score > 0 ? `+${enemyPlayer.score}` : ''}</p>
-                        <div className='captured-pieces'>
-                            {match.captures[enemyPlayer.color as Color].map(piece =>
-                                <img key={piece.id} src={`./images/pieces/${piece.type}-${piece.color}.svg`} alt='' />
-                            )}
-                        </div>
-                    </div>
                     <h3>Player: {enemyPlayer.user?.email}</h3>
+                    <PlayerPanel player={enemyPlayer} captures={match.captures} />
                     <ChessBoard match={match}/>
-                    <div className='card player-panel'>
-                        <p>{currentPlayer?.score > 0 ? `+${currentPlayer.score}` : ''}</p>
-                        <div className='captured-pieces'>
-                            {match.captures[currentPlayer.color as Color].map(piece =>
-                                <img key={piece.id} src={`./images/pieces/${piece.type}-${piece.color}.svg`} alt='' />
-                            )}
-                        </div>
-                    </div>
+                    <PlayerPanel player={currentPlayer} captures={match.captures} />
                     <h3>Player: {currentPlayer.user?.email}</h3>
                 </div>
             }
             <div>
                 {info && <h2>{info}</h2>}
-                <button onClick={findMatch}>Find Match</button>
+                {gamePhase === 'idle' && <button onClick={findMatch}>Find Match</button>}
             </div>
         </main>
     );

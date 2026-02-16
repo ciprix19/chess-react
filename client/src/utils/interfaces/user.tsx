@@ -9,8 +9,3 @@ export type AuthSession = {
     accessToken: string;
 }
 
-export type UserPlayer = {
-    user: User | undefined;
-    score: number;
-    color: string;
-}

@@ -2,6 +2,12 @@ import type { User } from "./user"
 
 export type Color = 'white' | 'black';
 
+export type UserPlayer = {
+    user: User | undefined;
+    score: number;
+    color: Color;
+}
+
 export type PieceType = {
     type: 'pawn' | 'knight' | 'bishop' | 'rook' | 'queen' | 'king';
     color: Color;
@@ -45,11 +51,10 @@ export type MatchType = {
     chessBoard: Array<Array<SquareType>>;
     legalMoves: Array<LegalMoves>;
     captures: CapturesType;
-    piecesColor: string;
+    piecesColor: Color;
     turn: string;
     gameStatus: GameStatusType;
 }
-
 
 export type CapturesType = {
     [key in Color]: Array<PieceType>;
@@ -69,3 +74,11 @@ export type GameOverType = {
     matchId: string;
     gameStatus: GameStatusType;
 }
+
+export type GamePhase =
+    | 'idle'
+    | 'finding'
+    | 'starting'
+    | 'playing'
+    | 'check'
+    | 'gameover'
