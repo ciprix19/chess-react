@@ -1,31 +1,16 @@
 .chess-board {
-    padding-inline: 2rem;
     margin: 0 auto;
-    max-width: 36rem;
 }
 
 .position-wrapper {
     position: relative;
-}
-
-.board {
-    display: grid;
-    grid-template-columns: repeat(8, 1fr);
-    grid-template-rows: repeat(8, 1fr);
-}
-
-.board.flipped {
-    transform: rotate(180deg);
-}
-.board.flipped .square {
-    transform: rotate(180deg);
+    z-index: 1;
 }
 
 .column-coordinates {
     display: flex;
     width: 100%;
 }
-
 .row-coordinates {
     position: absolute;
     left: -1rem;
@@ -33,13 +18,30 @@
     flex-direction: column;
     height: 100%;
 }
-
 .column-coordinates>div,
 .row-coordinates>div {
     flex: 1;
     display: flex;
     justify-content: center;
     align-items: center;
+}
+.reversed-column {
+    flex-direction: column-reverse;
+}
+.reversed-row {
+    flex-direction: row-reverse;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+}
+.board.flipped {
+    transform: rotate(180deg);
+}
+.board.flipped .square {
+    transform: rotate(180deg);
 }
 
 .square {
@@ -84,7 +86,6 @@
 .square .capture-highlight {
     background-color: var(--color-selected);
 }
-
 .square img {
     width: 4rem;
 }

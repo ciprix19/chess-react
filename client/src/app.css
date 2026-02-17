@@ -19,11 +19,14 @@
     border: 0.2rem solid var(--color-border);
 }
 
+.two-column-layout {
+    display: grid;
+    place-items: center;
+}
+
 @media screen and (width > 1080px) {
     .two-column-layout {
-        display: grid;
         grid-template-columns: 1fr 1fr;
-        place-items: center;
         gap: 3rem;
     }
     .three-column-layout {

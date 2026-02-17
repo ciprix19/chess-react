@@ -5,6 +5,8 @@ import './styles/play.css'
 import { useMatch } from "../../utils/hooks/useMatch";
 import { useEffect, useState } from "react";
 import { PlayerArea } from "./player-area/player-area";
+import Dashboard from "./dashboard/dashboard";
+import Landing from "./landing/landing";
 
 function ConnectionState({ isConnected, user } : { isConnected : boolean, user : User | undefined }) {
   return <p>Connection state: { user?.email + ' ' + isConnected }</p>;
@@ -33,28 +35,25 @@ export default function Play() {
     }, []);
 
     return (
-        <main className="play two-column-layout">
-            {match && enemyPlayer && currentPlayer &&
-                <div>
-                    <PlayerArea player={enemyPlayer} captures={match.captures} timerValueInMinutes={5}/>
-                    <ChessBoard match={match}/>
-                    <PlayerArea player={currentPlayer} captures={match.captures} timerValueInMinutes={5} />
-                </div>
+        <main className='play'>
+            {match && enemyPlayer && currentPlayer ?
+                <div className='two-column-layout'>
+                    <div className='play-area'>
+                        <PlayerArea player={enemyPlayer} captures={match.captures} timerValueInMinutes={5}/>
+                        <ChessBoard match={match}/>
+                        <PlayerArea player={currentPlayer} captures={match.captures} timerValueInMinutes={5} />
+                    </div>
+                    <Dashboard
+                        gamePhase={gamePhase}
+                        info={info}
+                        handleFindMatch={handleFindMatch}
+                        handleRematch={handleRematch}
+                        handleDraw={handleDraw}
+                        handleResign={handleResign}
+                    />
+                </div> :
+                <Landing info={info} handleFindMatch={handleFindMatch}/>
             }
-            <div>
-                {info && <h2>{info}</h2>}
-                {gamePhase === 'idle' && <button onClick={handleFindMatch}>Find Match</button>}
-                {(gamePhase === 'playing' || gamePhase === 'check') &&
-                    <>
-                        <button onClick={handleResign}>Resign</button>
-                        <button onClick={handleDraw}>Draw</button>
-                    </>}
-                {gamePhase === 'gameover' &&
-                    <>
-                        <button onClick={handleRematch}>Rematch</button>
-                        <button onClick={handleFindMatch}>Find Match</button>
-                    </>}
-            </div>
         </main>
     );
 }

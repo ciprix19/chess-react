@@ -1,0 +1,16 @@
+.landing ul li {
+    list-style: circle;
+    list-style-position: inside;
+}
+.landing ul {
+    padding-inline: 5rem;
+}
+
+@media screen and (width > 720px) {
+    .landing ul li {
+        list-style: circle;
+        list-style-position: inside;
+        text-align: left;
+        padding-inline-start: 1rem;
+    }
+}

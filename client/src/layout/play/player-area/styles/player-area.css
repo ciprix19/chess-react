@@ -22,7 +22,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background-color: var(--color-background);
+    background-color: var(--color-accent-strong);
+    padding-inline: 0.2rem;
     margin-block: 1rem;
 }
 .player-area > div {

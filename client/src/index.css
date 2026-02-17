@@ -5,7 +5,7 @@
 }
 
 html {
-    font-size: clamp(16px, 1vw, 24px);
+    /* font-size: clamp(16px, 1vw, 24px); */
     scroll-behavior: smooth;
     height: 100%;
 }

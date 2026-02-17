@@ -8,7 +8,7 @@ export function useMatch() {
     const authContext = useContext(AuthContext);
     const audio = useGameAudio();
     const [gamePhase, setGamePhase] = useState<GamePhase>('idle');
-    const [info, setInfo] = useState('');
+    const [info, setInfo] = useState('Click to find match...');
     const [enemyPlayer, setEnemyPlayer] = useState<UserPlayer>();
     const [currentPlayer, setCurrentPlayer] = useState<UserPlayer>();
     const [match, setMatch] = useState<MatchType>();

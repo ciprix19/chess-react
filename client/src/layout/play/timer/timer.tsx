@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import './styles/timer.css'
 
 const MS_CONVERSION = 60 * 1000
 
@@ -24,7 +25,7 @@ export default function Timer({ timerValueInMinutes } : { timerValueInMinutes : 
 
     return (
         <div className='timer'>
-            {minutes < 10 ? `0${minutes}` : minutes} : {seconds < 10 ? `0${seconds}` : seconds}
+            <label>{minutes < 10 ? `0${minutes}` : minutes}:{seconds < 10 ? `0${seconds}` : seconds}</label>
         </div>
     );
 }

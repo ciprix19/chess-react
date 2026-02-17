@@ -2,6 +2,8 @@
     text-align: center;
 }
 
-.play > div {
-    padding: 1rem;
+@media screen and (width > 720px) {
+    .play > div {
+        padding: 1rem 2rem;
+    }
 }

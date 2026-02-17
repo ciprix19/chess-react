@@ -4,7 +4,6 @@ import type { CoordinateType, LegalMoves, MatchType, MoveType, PieceType, Square
 import { socket } from '../../../utils/socket-client/socket';
 
 let displayRowValuesReversed = ['8', '7', '6', '5', '4', '3', '2', '1'];
-let displayRowValues = ['1', '2', '3', '4', '5', '6', '7', '8'];
 let displayColumnValues = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
 
 function Piece({ piece } : { piece: PieceType }) {
@@ -120,7 +119,7 @@ export default function ChessBoard({ match } : { match: MatchType }) {
     return (
         <div className='chess-board'>
             <div className='position-wrapper'>
-                <div className='row-coordinates'>
+                <div className={`row-coordinates ${match.piecesColor === 'black' ? 'reversed-column' : ''}`}>
                     {displayRowValuesReversed.map((val) => {
                         return <div key={val}>{val}</div>
                     })}
@@ -146,7 +145,7 @@ export default function ChessBoard({ match } : { match: MatchType }) {
                     })}
                 </div>
             </div>
-            <div className='column-coordinates'>
+            <div className={`column-coordinates ${match.piecesColor === 'black' ? 'reversed-row' : ''}`}>
                 {displayColumnValues.map((val) => {
                     return <div key={val}>{val}</div>
                 })}
