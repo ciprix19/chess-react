@@ -64,7 +64,13 @@ export function useMatch() {
 
     const handleDrawAccepted = (answer: boolean) => {
         if (answer === true) {
-            console.log('am acc draw');
+            if (!authContext.authSession) {
+                setInfo('Please login');
+                return;
+            }
+            if (!match) return;
+            socket.auth.token = authContext.authSession.accessToken;
+            socket.emit('draw-accepted', { matchId: match.matchId });
         }
         setDrawOfferReceived(false);
     }

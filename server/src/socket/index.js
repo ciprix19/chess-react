@@ -16,7 +16,6 @@ function initSocket(io) {
         - en passant (move histoy)
         - handle socket reconnect (advanced)
         - add timer
-        - resign button and draw offer
     */
     io.on('connection', (socket) => {
         console.log(`User connected: ${socket.id}`);
@@ -103,14 +102,32 @@ function initSocket(io) {
             socket.to(match.id).emit('draw-offer', {
                 matchId: match.id,
                 from: data.you
-            })
+            });
         });
+
+        socket.on('draw-accepted', (data) => {
+            match = getMatchById(data.matchId);
+            if (!match) return;
+            match.gameStatus = {
+                state: 'draw-agreement',
+                winner: null,
+                winnerColor: null
+            }
+            match.sockets.forEach(socketId => {
+                const s = io.sockets.sockets.get(socketId);
+                if (!s) return;
+                s.emit('gameover-by-agreement', {
+                    matchId: match.id,
+                    gameStatus: match.gameStatus
+                });
+            });
+        })
 
         socket.on('client-move', (data) => {
             console.log(data);
             match = getMatchById(data.matchId);
 
-            if (!match) return;
+            if (!match || match.gameStatus.state !== 'playing' || match.gameStatus.state !== 'check') return;
 
             let playerColor = null;
             if (socket.user.email === match.playerWhite.email) {
