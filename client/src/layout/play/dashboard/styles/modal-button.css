@@ -1,0 +1,39 @@
+.modal-button {
+    position: relative;
+    flex: 1;
+    display: flex;
+}
+.modal-button > button {
+    flex: 1;
+}
+
+.button-options {
+    display: flex;
+}
+.button-options > button {
+    margin-block: 0.2rem;
+}
+
+.arrow-up {
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-left: 1rem solid transparent;
+    border-right: 1rem solid transparent;
+
+    border-bottom: 1rem solid var(--color-border);
+}
+
+.modal {
+    position: absolute;
+    top: 100%;
+    left: -20%;
+    display: none;
+    z-index: 3;
+    background-color: var(--color-border);
+    border: 0.2rem solid var(--color-border);
+    border-radius: 0 0 2rem 2rem;
+}
+.modal.active {
+    display: block;
+}

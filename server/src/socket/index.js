@@ -70,6 +70,42 @@ function initSocket(io) {
             }
         });
 
+        function getOtherPlayer(match, player) {
+            return match.playerWhite.email === player.email ? match.playerBlack : match.playerWhite;
+        }
+
+        socket.on('resign', (data) => {
+            let playerThatResigned = data.you;
+            const match = getMatchById(data.matchId);
+            if (!match) return null;
+            let otherPlayer = getOtherPlayer(match, playerThatResigned);
+            match.gameStatus = {
+                state: 'resign',
+                winner: otherPlayer,
+                winnerColor: data.piecesColor === 'white' ? 'black' : 'white'
+            }
+            match.sockets.forEach(socketId => {
+                const s = io.sockets.sockets.get(socketId);
+                if (!s) return;
+                s.emit('gameover-by-agreement', {
+                    matchId: match.id,
+                    gameStatus: match.gameStatus
+                });
+            })
+        });
+
+        socket.on('draw', (data) => {
+            let initiatingPlayer = data.you;
+            const match = getMatchById(data.matchId);
+            if (!match) return null;
+            let otherPlayer = getOtherPlayer(match, initiatingPlayer);
+            console.log(data);
+            socket.to(match.id).emit('draw-offer', {
+                matchId: match.id,
+                from: data.you
+            })
+        });
+
         socket.on('client-move', (data) => {
             console.log(data);
             match = getMatchById(data.matchId);

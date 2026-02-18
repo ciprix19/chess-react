@@ -1,8 +1,9 @@
 import { useContext, useEffect, useMemo, useState } from "react";
 import { AuthContext } from "../../utils/context/authContext";
 import { socket } from "../../utils/socket-client/socket";
-import type { BoardUpdatedType, Color, GamePhase, MatchType, UserPlayer } from "../interfaces/chess-types";
+import type { BoardUpdatedType, Color, GameOverType, GamePhase, MatchType, UserPlayer } from "../interfaces/chess-types";
 import { useGameAudio } from "./useGameAudio";
+import type { User } from "../interfaces/user";
 
 export function useMatch() {
     const authContext = useContext(AuthContext);
@@ -11,6 +12,7 @@ export function useMatch() {
     const [info, setInfo] = useState('Click to find match...');
     const [enemyPlayer, setEnemyPlayer] = useState<UserPlayer>();
     const [currentPlayer, setCurrentPlayer] = useState<UserPlayer>();
+    const [drawOfferReceived, setDrawOfferReceived] = useState(false);
     const [match, setMatch] = useState<MatchType>();
 
     function getOpponentColor(color: Color) : Color {
@@ -48,11 +50,35 @@ export function useMatch() {
     }
 
     const handleDraw = () => {
+        if (!authContext.authSession) {
+            setInfo('Please login');
+            return;
+        }
+        if (!match) return;
+        if (gamePhase === 'playing' || gamePhase === 'check') {
+            socket.auth.token = authContext.authSession.accessToken;
+            socket.emit('draw', { matchId: match.matchId, you: match.you });
+            setInfo('Draw offer sent...')
+        }
+    }
 
+    const handleDrawAccepted = (answer: boolean) => {
+        if (answer === true) {
+            console.log('am acc draw');
+        }
+        setDrawOfferReceived(false);
     }
 
     const handleResign = () => {
-
+        if (!authContext.authSession) {
+            setInfo('Please login');
+            return;
+        }
+        if (!match) return;
+        if (gamePhase === 'playing' || gamePhase === 'check') {
+            socket.auth.token = authContext.authSession.accessToken;
+            socket.emit('resign', { matchId: match.matchId, piecesColor: match.piecesColor, you: match.you });
+        }
     }
 
     useEffect(() => {
@@ -150,19 +176,45 @@ export function useMatch() {
                 console.log(error);
             }
         }
+        function onGameOverByAgreement(data: GameOverType) {
+            console.log(data);
+            setGamePhase('gameover');
+            let enemyColor = getOpponentColor(data.gameStatus.winnerColor);
+            if (data.gameStatus.state === 'resign') {
+                setInfo(enemyColor.charAt(0).toUpperCase() + enemyColor.slice(1) + ' resigned. ' + data.gameStatus.winnerColor.charAt(0).toUpperCase() + data.gameStatus.winnerColor.slice(1) + ' won.');
+            } else if (data.gameStatus.state === 'draw-agreement') {
+                setInfo('Draw');
+            }
+        }
+
+        function onDrawOffer(data: { matchId: number, from: User }) {
+            console.log(data);
+            setDrawOfferReceived(true);
+        }
+
         socket.on('game-ready', onGameReady);
         socket.on('board-updated', onBoardUpdated);
+        socket.on('draw-offer', onDrawOffer);
+        socket.on('gameover-by-agreement', onGameOverByAgreement);
         return () => {
             socket.off('game-ready', onGameReady);
             socket.off('board-updated', onBoardUpdated);
+            socket.off('draw-offer', onDrawOffer);
+            socket.off('gameover-by-agreement', onGameOverByAgreement);
         }
     }, []);
+
+    useEffect(() => {
+    console.log("drawOfferReceived changed:", drawOfferReceived);
+}, [drawOfferReceived]);
 
     return {
         match,
         currentPlayer,
         enemyPlayer,
         gamePhase,
+        drawOfferReceived,
+        handleDrawAccepted,
         info,
         handleFindMatch,
         handleRematch,

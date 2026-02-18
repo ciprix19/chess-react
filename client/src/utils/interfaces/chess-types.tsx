@@ -38,8 +38,9 @@ export type LegalMoves = {
 }
 
 export type GameStatusType = {
-    state: 'playing' | 'check' | 'checkmate' | 'stalemate';
+    state: 'playing' | 'check' | 'checkmate' | 'stalemate' | 'resign' | 'draw-agreement';
     winner: User | null;
+    winnerColor: Color;
 }
 
 export type MatchType = {

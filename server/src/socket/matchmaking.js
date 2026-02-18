@@ -22,8 +22,9 @@ function createMatch(socket) {
             black: []
         },
         gameStatus: {
-            state: 'playing', // | 'check' | 'checkmate' | 'stalemate'
+            state: 'playing', // | 'check' | 'checkmate' | 'stalemate' | 'resign' | 'draw-agreement'
             winner: null, // | User
+            winnerColor: null, // | 'white' | 'black'
         }
     }
     waitingQueue.push(match);

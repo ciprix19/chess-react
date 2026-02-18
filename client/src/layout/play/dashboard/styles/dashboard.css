@@ -16,11 +16,6 @@
     width: 100%;
     gap: 0.5rem;
 }
-.options > button {
-    flex: 1;
-    margin-inline: 0;
-    background-color: var(--color-background);
-}
 
 .move-history {
     width: 100%;

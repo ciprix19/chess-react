@@ -14,7 +14,7 @@ function ConnectionState({ isConnected, user } : { isConnected : boolean, user :
 
 export default function Play() {
     const [isConnected, setIsConnected] = useState(socket.connected);
-    const { match, currentPlayer, enemyPlayer, gamePhase, info, handleFindMatch, handleRematch, handleDraw, handleResign } = useMatch();
+    const { match, currentPlayer, enemyPlayer, gamePhase, info, drawOfferReceived, handleDrawAccepted, handleFindMatch, handleRematch, handleDraw, handleResign } = useMatch();
 
     useEffect(() => {
         function onConnect() {
@@ -46,6 +46,8 @@ export default function Play() {
                     <Dashboard
                         gamePhase={gamePhase}
                         info={info}
+                        drawOfferReceived={drawOfferReceived}
+                        handleDrawAccepted={handleDrawAccepted}
                         handleFindMatch={handleFindMatch}
                         handleRematch={handleRematch}
                         handleDraw={handleDraw}

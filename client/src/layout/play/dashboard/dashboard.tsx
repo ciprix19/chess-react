@@ -1,16 +1,33 @@
-import type { GamePhase, MatchType } from '../../../utils/interfaces/chess-types';
-import './styles/dashboard.css'
+import { useState } from 'react';
+import type { GamePhase } from '../../../utils/interfaces/chess-types';
+import './styles/dashboard.css';
+import ModalButton from './modal-button';
 
-export default function Dashboard({ info, gamePhase, handleFindMatch, handleRematch, handleDraw, handleResign } : {
+function DrawPanel({ handleDrawAccepted } : { handleDrawAccepted: (answer: boolean) => void }) {
+    return (
+        <>
+            <h3>Accept Draw?</h3>
+            <button onClick={() => handleDrawAccepted(true)}>Yes</button>
+            <button onClick={() => handleDrawAccepted(false)}>No</button>
+        </>
+    );
+}
+
+export default function Dashboard({ info, drawOfferReceived, handleDrawAccepted, gamePhase, handleFindMatch, handleRematch, handleDraw, handleResign } : {
     info: string,
+    drawOfferReceived: boolean,
+    handleDrawAccepted: (answer: boolean) => void,
     gamePhase: GamePhase,
     handleFindMatch: () => void,
     handleRematch: () => void,
     handleDraw: () => void,
     handleResign: () => void
 }) {
+
     return (
         <div className='dashboard'>
+            {drawOfferReceived && <DrawPanel handleDrawAccepted={handleDrawAccepted}/>}
+            {info && <h3>{info}</h3>}
             <h3>Move history</h3>
             <textarea className='move-history'>
 
@@ -18,8 +35,9 @@ export default function Dashboard({ info, gamePhase, handleFindMatch, handleRema
             <div className='options'>
                 {(gamePhase === 'playing' || gamePhase === 'check') &&
                     <>
-                        <button onClick={handleResign}>Resign</button>
-                        <button onClick={handleDraw}>Draw</button>
+                        {/* <button onClick={toggleModal}>Resign</button> */}
+                        <ModalButton action='resign' onYesAction={handleResign}/>
+                        <ModalButton action='draw' onYesAction={handleDraw}/>
                     </>}
                 {gamePhase === 'gameover' &&
                     <>
